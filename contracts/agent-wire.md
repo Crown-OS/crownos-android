@@ -1,4 +1,4 @@
-# crown-agent wire format (draft v0, frozen after S1/S2)
+# crown-agent wire format (v1, frozen)
 
 One record format serves both agent sockets, so the Java agent, the C++ HWC and the Rust daemon each implement one codec.
 
@@ -57,6 +57,8 @@ Both sides send `Hello` first and close the connection when `wire` differs.
 | 0x0303 | `QueryKeepAlive` | none |
 | 0x0304 | `QueryGsfId` | none |
 | 0x0305 | `Shutdown` | none |
+| 0x0306 | `OpenUri` | `uri: str` (`market:` or `https:` only) |
+| 0x0307 | `InstallPackage` | `path: str` (a plain file name under `/data/crownos/inbox/`) |
 
 ## Agent → daemon
 
@@ -68,8 +70,7 @@ Both sides send `Hello` first and close the connection when `wire` differs.
 | 0x0404 | `Tasks` | `list<u32>` |
 | 0x0405 | `KeepAlive` | `reasons: u32` (bit 0 audio, 1 call, 2 install, 3 download, 4 foreground service) |
 | 0x0406 | `GsfId` | `id: str`, empty when unavailable |
+| 0x0407 | `LaunchFailed` | `package: str`, `reason: str` |
+| 0x0408 | `InstallResult` | `path: str`, `ok: u32`, `message: str` |
 
-## Open questions for S1/S2
-- Which task facts the image exposes cheaply (`resizable`, `min_*`, color).
-- Whether atlas slot choice belongs in the agent (current draft) or the HWC.
-- Whether `Visibility` maps to stopping a task's rendering on this Android build.
+`crates/agent-wire` is the source of truth; this table must match it and `agent-wire-vectors.txt`.

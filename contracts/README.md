@@ -127,6 +127,5 @@ The D-Bus `Notify` path keeps reading the `value` hint as percent. Lane L7 also 
 | `/data/crownos/agent.sock` | container | daemon ⇄ agent, mode 0600 owned by the host user's uid |
 
 ### Polkit actions
-- `org.crownos.android.setup`: start or retry `crownos-android-setup.service`.
-- `org.crownos.android.container`: start or stop `waydroid-container.service`.
-- Both are granted without a password to active local sessions.
+- `50-crownos-android.rules` grants `org.freedesktop.systemd1.manage-units`, start and stop only, for `waydroid-container.service` and `crownos-android-setup.service`, to active local sessions, with no password. The daemon and "Try again" use it.
+- `org.crownos.android.setup` is the pkexec action for `/usr/lib/crownos-android/crownos-android-setup`. It is `auth_admin_keep`, so Settings asks for an administrator password. Under pkexec the binary accepts only `remove`, `remove --wipe-data` and `enable`.
