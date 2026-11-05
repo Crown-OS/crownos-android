@@ -3,19 +3,19 @@
 Collected from the lane reports. The lead handles these when merging the lane branches, unless a line says otherwise.
 
 ## Lead, at merge
-- **Setup unit type.** Change `crownos-android-setup.service` to `Type=exec` (iso lane). A oneshot keeps a start job open for the whole download, so the boot never finishes and tty1 shows "A start job is running".
-- **Settings re-enable.** Switch Settings' `SET_UP_AGAIN` (`crownos-settings/src/net/android/removal.rs`) to `pkexec /usr/lib/crownos-android/crownos-android-setup enable`, which is contract 12's new command.
-- **Autoinstall key.** Check that `crownos-iso/tests/autoinstall-android.json` uses the installer's key: `"android_apps": {"enabled": {"google_play": true}}`.
-- **pkexec path.** Check that the pkexec action's `exec.path` is `/usr/lib/crownos-android/crownos-android-setup`.
-- **Lockfiles.** Refresh Cargo.lock files after the merges. Review the installer's lock refresh commit `2991783`, which may reflect the user's uncommitted crownui working copy.
-- **Contract 4 supplement.** The daemon lane added `install_package`, `open_uri` and `open_app_settings` as a supplement protocol in `runtime::supplement` on the same socket. Fold them into `android_protocol::android` as appended methods, so their selectors stay new, and route them through the one handler.
-- **Container service after logout.** Add `ExecStopPost=-/usr/bin/systemctl stop --no-block waydroid-container.service` to `crownos-android-session.service`, so Waydroid's root container manager does not outlive the session. It is best effort: polkit may refuse once the session is no longer active.
-- **Handlers.** The daemon ships `crown-android-handler.desktop` (APK) and `crown-android-market-handler.desktop` (market links). Optionally set them as defaults in the ISO's `mimeapps.list`.
-- **Licenses.** Add LICENSE files to crownos-android and install them in the PKGBUILD.
-- **vgem.** Decide on vgem release fences with the hwc lane's result. If they are used, ship `modules-load.d/crownos-android.conf` with `vgem`, bind its node into the container, and always set `drm_device`.
+Done on 2026-11-05:
+- Setup unit is `Type=exec`. The session unit stops `waydroid-container.service` when it ends. Commit `934c817`.
+- Settings' reset now runs `crownos-android-setup enable`. Commit `cec9919` on crownos-settings `android/installer`.
+- The supplement calls are folded into contract 4 (wire-identical). The stage doc is fixed. Commit `934c817`.
+- Licenses are added (`934c817`) and installed by the PKGBUILD (`10bb0fa` on crownos-pkgbuilds `android/iso`).
+- Checked: the autoinstall key `"android_apps": {"enabled": {"google_play": true}}`, and the pkexec `exec.path` `/usr/lib/crownos-android/crownos-android-setup`.
 
-- Venus release asset: upload `~/.cache/crownos-android/venus/dist/crownos-android-venus-2026.11.0.tar.zst` as release `venus-2026.11.0` on Crown-OS/crownos-android; the PKGBUILD pins its sha256 and commit `fce7d14`.
-- `spikes/s4-venus/runtime-test.sh` still names the unit `crownos-venus.service`; use `crownos-android-render.service` when running it.
+Still open:
+- **Lockfiles.** Refresh the Cargo.lock files of the existing repos after the merges. Review the installer's lock refresh commit `2991783`, which may reflect the user's uncommitted crownui working copy.
+- **vgem.** Decide on vgem release fences once the hwc lane reports. If they are used, ship `modules-load.d/crownos-android.conf` with `vgem`, bind its node into the container, and always set `drm_device`.
+- **Handlers.** Optionally make `crown-android-handler.desktop` (APK) and `crown-android-market-handler.desktop` (market links) the defaults in the ISO's `mimeapps.list`.
+- **Venus release asset.** Upload `~/.cache/crownos-android/venus/dist/crownos-android-venus-2026.11.0.tar.zst` as release `venus-2026.11.0` on Crown-OS/crownos-android. The PKGBUILD pins its sha256 and commit `fce7d14`.
+- **Spike script.** `spikes/s4-venus/runtime-test.sh` still names the unit `crownos-venus.service`; use `crownos-android-render.service` when running it.
 
 ## User, when merging into their own repos
 - crownpositor: `clippy -D warnings` fails on 93 warnings that already exist on `main` (none on lines the compositor lane changed; five of the files carry uncommitted user edits). Decide whether to clean them up before or after merging `android/compositor`.
