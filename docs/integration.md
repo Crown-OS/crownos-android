@@ -22,6 +22,12 @@ Collected from the lane reports. The lead handles these when merging the lane br
 - **Windows migration assistant.** `windows-migration-assistant/src/oobe.rs` needs `android_apps`, and it is already missing `ai_features`. That repo has no commits, so no lane could touch it.
 - **Rust toolchain.** The rustup `stable` toolchain is half-installed ("missing manifest"). Lanes pinned `1.97-x86_64-unknown-linux-gnu`. Repair it with `rustup toolchain install stable --force` when convenient.
 
+- crownos-process-monitor's `docs/conventions.md` says "Never commit"; the bench lane committed `2f30c94` on its own branch `android/bench` only, per the lane rules.
+
+## Measurement gaps (bench reports "not measured")
+- Setup duration: `setup.json` carries no timestamps. Either add `updated_unix_ms` to `SetupStatus` (contract 5, appended field) or let the bench time stage changes itself.
+- Frames, resize and raise latency: need Perfetto inside Android, tracing spans in crownpositor and wp_presentation instrumentation in the HWC.
+
 ## Release
 - **Artifacts.** Publish crownos-android and crownos-android-venus, plus `bundle-<version>.tar.zst` with `manifest.json` and `manifest.json.minisig` at its root, from the crownos-android release. Then update the PKGBUILD commit pins.
 - **Signing key.** Generate the release minisign key, replacing the dev key in `setup/src/keys.rs` (setup lane).

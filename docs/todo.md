@@ -63,7 +63,7 @@ Ground rules for every agent:
 ## Wave 3: integration
 - [ ] E1 hardware end-to-end
 - [ ] E2 ISO and QEMU install test
-- [~] E3 bench harness and process-monitor identity (runs as Wave 2 lane `bench`)
+- [x] E3 bench harness and process-monitor identity: crownos-android 035cfac, crownos-process-monitor 2f30c94 on android/bench; 45 + 96 tests
 
 ## Wave 4: optimization
 - [ ] P1 Android memory and boot
