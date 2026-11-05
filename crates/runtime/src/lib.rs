@@ -14,10 +14,8 @@ pub mod paths;
 pub mod persisted;
 pub mod watch;
 
-mod control;
 mod util;
 
-pub use control::supplement;
 pub use installation::{Installation, Installed};
 pub use lifecycle::{Effect, Errand, Lifecycle, Milestone};
 pub use paths::Paths;

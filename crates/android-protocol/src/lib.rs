@@ -43,6 +43,13 @@ crownos_ipc::protocol! {
         /// The Google services framework id to register at
         /// <https://www.google.com/android/uncertified>, once Android has one.
         fn google_registration_id() -> Option<String>;
+        /// Install `file_name`, which the caller already copied into the
+        /// inbox (`<android data>/crownos/inbox/`). The result is a notification.
+        fn install_package(file_name: String) -> LaunchOutcome;
+        /// Open a `market:` or `https:` link in Android.
+        fn open_uri(uri: String) -> LaunchOutcome;
+        /// Show the Android settings page of `package`.
+        fn open_app_settings(package: String) -> LaunchOutcome;
         event RuntimeChanged { status: RuntimeStatus };
         event SetupProgress { status: SetupStatus };
     }

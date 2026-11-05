@@ -1,6 +1,7 @@
 # First-boot setup of Android apps (contract 12, `run`). It can wait for the
-# network for a long time, so it is ordered after multi-user.target: the target
-# would otherwise wait for this oneshot and the boot would never reach it.
+# network for a long time, so it is an exec service started after
+# multi-user.target: a oneshot would hold its start job open for the whole
+# download, and the boot would never finish.
 # `remove --wipe-data` needs the home directories and runs through pkexec, never
 # under this sandbox.
 
@@ -12,7 +13,7 @@ Wants=network-online.target
 After=network-online.target multi-user.target
 
 [Service]
-Type=oneshot
+Type=exec
 ExecStart=/usr/lib/crownos-android/crownos-android-setup run
 Nice=19
 IOSchedulingClass=idle

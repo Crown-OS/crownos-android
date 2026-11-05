@@ -605,6 +605,7 @@ dependencies = [
  "bitflags 2.13.2",
  "wayland-backend",
  "wayland-client",
+ "wayland-protocols",
  "wayland-scanner",
 ]
 

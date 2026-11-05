@@ -1,4 +1,4 @@
-//! The `crownos-android` methods: contract 4 and the supplement.
+//! The `crownos-android` methods (contract 4).
 
 use std::time::Instant;
 
@@ -6,8 +6,8 @@ use agent_wire::Record;
 use android_protocol::{LaunchOutcome, RuntimeState, RuntimeStatus, StopReason, android};
 use crownos_ipc::{Error, Kind, Message, MethodMsg, PeerId, RemoteError, Server, postcard};
 use desktop_entries::is_package_name;
+use runtime::Errand;
 use runtime::paths::guest_inbox_path;
-use runtime::{Errand, supplement};
 
 use crate::daemon::{Daemon, GSF_REPLY};
 use crate::deferred::ReplyTo;
@@ -47,11 +47,6 @@ impl Daemon {
                     Err(_) => server.drop_peer(peer),
                 }
                 Ok(())
-            }
-            supplement::install_package::SELECTOR
-            | supplement::open_uri::SELECTOR
-            | supplement::open_app_settings::SELECTOR => {
-                supplement::dispatch(self, server, peer, message)
             }
             _ => android::dispatch(self, server, peer, message),
         }
@@ -159,9 +154,7 @@ impl android::Handler for Daemon {
     fn google_registration_id(&mut self) -> Result<Option<String>, RemoteError> {
         Err(refused(ANSWERED_LATER))
     }
-}
 
-impl supplement::Handler for Daemon {
     fn install_package(&mut self, file_name: String) -> Result<LaunchOutcome, RemoteError> {
         let guest_path = guest_inbox_path(&file_name).ok_or_else(|| refused("not a file name"))?;
         if !self.env.paths.inbox().join(&file_name).is_file() {

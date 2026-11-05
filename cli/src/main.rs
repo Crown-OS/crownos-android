@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use android_protocol::{StopReason, android};
 use anyhow::{Context, Result};
-use runtime::{Paths, supplement};
+use runtime::Paths;
 
 use args::Command;
 
@@ -69,17 +69,17 @@ fn run(command: Command) -> Result<()> {
         Command::Install { apk } => {
             let paths = Paths::from_env()?;
             let file_name = inbox::copy_in(&apk, &paths.inbox())?;
-            let mut client = connect_supplement()?;
+            let mut client = connect()?;
             let pending = client.install_package(file_name)?;
             outcome::check(client.wait(pending, Some(CALL_TIMEOUT))?)
         }
         Command::Open { uri } => {
-            let mut client = connect_supplement()?;
+            let mut client = connect()?;
             let pending = client.open_uri(uri)?;
             outcome::check(client.wait(pending, Some(CALL_TIMEOUT))?)
         }
         Command::Settings { package } => {
-            let mut client = connect_supplement()?;
+            let mut client = connect()?;
             let pending = client.open_app_settings(package)?;
             outcome::check(client.wait(pending, Some(CALL_TIMEOUT))?)
         }
@@ -88,8 +88,4 @@ fn run(command: Command) -> Result<()> {
 
 fn connect() -> Result<android::Client> {
     android::Client::connect().context("crown-androidd is not reachable")
-}
-
-fn connect_supplement() -> Result<supplement::Client> {
-    supplement::Client::connect().context("crown-androidd is not reachable")
 }

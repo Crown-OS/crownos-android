@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 /// cannot ignore.
 pub const FORMAT: u32 = 1;
 
-/// Setup stages in the order the service runs them.
+/// Setup stages. The service probes the machine before it waits for the network.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Stage {

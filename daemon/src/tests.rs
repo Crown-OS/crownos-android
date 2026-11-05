@@ -11,8 +11,8 @@ use std::time::Duration;
 
 use android_protocol::{LaunchOutcome, RuntimeState, StopReason, android};
 use crownos_ipc::ServiceBuilder;
+use runtime::Paths;
 use runtime::lifecycle::BootFailure;
-use runtime::{Paths, supplement};
 
 use crate::activation::Launch;
 use crate::daemon::{Daemon, Environment, Services};
@@ -155,10 +155,6 @@ impl Harness {
         android::Client::connect_in(&self.socket_dir).expect("connect to the daemon")
     }
 
-    fn supplement(&self) -> supplement::Client {
-        supplement::Client::connect_in(&self.socket_dir).expect("connect to the daemon")
-    }
-
     fn system(&self) -> PathBuf {
         self.root.join("system")
     }
@@ -271,7 +267,7 @@ fn the_registration_id_is_none_before_android_reports_one() {
 #[test]
 fn install_takes_only_files_already_in_the_inbox() {
     let harness = Harness::start("install");
-    let mut client = harness.supplement();
+    let mut client = harness.android();
     let pending = client.install_package("missing.apk".into()).expect("send");
     assert!(client.wait(pending, WAIT).is_err());
     let pending = client
@@ -289,7 +285,7 @@ fn install_takes_only_files_already_in_the_inbox() {
 #[test]
 fn only_market_and_https_links_open() {
     let harness = Harness::start("open");
-    let mut client = harness.supplement();
+    let mut client = harness.android();
     let pending = client.open_uri("file:///etc/passwd".into()).expect("send");
     assert!(client.wait(pending, WAIT).is_err());
     let pending = client
@@ -304,7 +300,7 @@ fn only_market_and_https_links_open() {
 #[test]
 fn app_settings_need_a_package_name() {
     let harness = Harness::start("settings");
-    let mut client = harness.supplement();
+    let mut client = harness.android();
     let pending = client
         .open_app_settings("not a package".into())
         .expect("send");

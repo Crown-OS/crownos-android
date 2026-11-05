@@ -7,7 +7,7 @@ Every lane builds against these contracts and nothing else. A contract changes o
 | 1 | `crownos-android-shell-v1` Wayland protocol | frozen v1 | `crownos-protocols` branch `android/base`, `protocols/crownos-android-shell-v1.xml` |
 | 2 | HWC ⇄ agent records | frozen v1 | `crates/agent-wire` and `agent-wire-vectors.txt` |
 | 3 | daemon ⇄ agent records | frozen v1 | `crates/agent-wire` and `agent-wire-vectors.txt` |
-| 4 | `crownos-android` crownos-ipc service | frozen v1 | `crates/android-protocol` |
+| 4 | `crownos-android` crownos-ipc service | frozen v1 (install_package, open_uri, open_app_settings appended at integration) | `crates/android-protocol` |
 | 5 | `setup.json` | frozen v1 | `crates/setup-state` |
 | 6 | `android.ron` (system and user) | frozen v1 | `crownos-config` branch `android/base`: `system/android.rs`, `schema/android.rs` |
 | 7 | crownotify progress notifications | frozen v1 | below; the notify lane adds it to `crownotify/src/proto.rs` |
@@ -111,8 +111,9 @@ The D-Bus `Notify` path keeps reading the `value` hint as percent. Lane L7 also 
 ### Units
 | Unit | Kind | Purpose |
 |---|---|---|
-| `crownos-android-setup.service` | system, oneshot | first-boot setup, gated by `ConditionPathExists=/var/lib/crownos/android/pending` |
+| `crownos-android-setup.service` | system, exec | first-boot setup, gated by `ConditionPathExists=/var/lib/crownos/android/pending` |
 | `crown-androidd.socket`, `crown-androidd.service` | user | socket-activated daemon on `%t/crownos/crownos-android.sock` |
+| `crown-androidd.path` | user | starts the daemon at login while the setup pending marker exists, so the loader shows with no client |
 | `crownos-android-session.service` | user | runs `waydroid session start`, started and stopped by the daemon |
 | `crownos-android-render.service` | user | Venus host render server, Venus tier only, started by the daemon before the session |
 

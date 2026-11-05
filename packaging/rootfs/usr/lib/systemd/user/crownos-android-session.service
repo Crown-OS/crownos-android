@@ -13,3 +13,6 @@ Environment=WAYLAND_DISPLAY=%t/crownos/android-wayland.sock
 Environment=XDG_DATA_HOME=%h/.local/share/crownos/android
 ExecStart=/usr/bin/waydroid session start
 ExecStop=/usr/bin/waydroid session stop
+# Waydroid's root container manager must not outlive the session, for example at
+# logout. Best effort: polkit refuses once the session is no longer active.
+ExecStopPost=-/usr/bin/systemctl stop --no-block waydroid-container.service
