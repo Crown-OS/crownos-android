@@ -10,7 +10,7 @@ Done on 2026-11-05:
 - Licenses are added (`934c817`) and installed by the PKGBUILD (`10bb0fa` on crownos-pkgbuilds `android/iso`).
 - Checked: the autoinstall key `"android_apps": {"enabled": {"google_play": true}}`, and the pkexec `exec.path` `/usr/lib/crownos-android/crownos-android-setup`.
 
-- vgem: the hwc lane uses vgem release and retire fences. `modules-load.d/crownos-android.conf` loads vgem, and `prepare-container` binds its render node with a line Waydroid never writes, so the line follows a renumbered node. Setup always sets `drm_device`. Commit `6e06917`.
+- vgem: the hwc lane uses vgem release and retire fences. `modules-load.d/crownos-android.conf` loads vgem, and `prepare-container` binds its render node with a line Waydroid never writes, so the line follows a renumbered node. Setup always sets `drm_device`. Commit `7349a01`.
 
 Still open:
 - **Lockfiles.** Refresh the Cargo.lock files of the existing repos after the merges. Review the installer's lock refresh commit `2991783`, which may reflect the user's uncommitted crownui working copy.
