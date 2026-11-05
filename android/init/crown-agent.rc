@@ -1,0 +1,11 @@
+# crown-agent: the root task organizer and the agent end of both agent-wire sockets.
+# The bundle installs it as /var/lib/waydroid/overlay/system/etc/init/crown-agent.rc, which init
+# reads from the merged overlay as /system/etc/init/crown-agent.rc. Init restarts it after a crash,
+# and the agent exits when system_server dies so a soft reboot gets a fresh one.
+service crown_agent /system/bin/app_process64 /system/bin org.crownos.agent.Main
+    class main
+    user root
+    group root system
+    setenv CLASSPATH /system/framework/crown-agent.jar
+    socket crown_agent stream 0660 root system
+    restart_period 1

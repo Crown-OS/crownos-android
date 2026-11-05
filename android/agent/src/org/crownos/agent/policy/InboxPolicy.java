@@ -5,7 +5,8 @@ import java.nio.charset.StandardCharsets;
 /** Which files the daemon may ask the agent to install: regular names directly inside the inbox. */
 public final class InboxPolicy {
     /** The drop directory crown-android copies APKs into. */
-    public static final String INBOX = "/data/crownos/inbox/";
+    public static final String INBOX_DIRECTORY = "/data/crownos/inbox";
+    public static final String INBOX = INBOX_DIRECTORY + "/";
     public static final int MAX_NAME_BYTES = 255;
     private static final char FIRST_PRINTABLE = 0x20;
     private static final char DELETE = 0x7F;
