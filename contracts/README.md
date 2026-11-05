@@ -43,6 +43,7 @@ Runs as root. Every subcommand writes `setup.json` when it changes setup state.
 | `crownos-android-setup run` | `crownos-android-setup.service` | The first-boot setup. It is idempotent and resumes after a reboot. |
 | `crownos-android-setup prepare-container` | `ExecStartPre=` drop-in on `waydroid-container.service` | Pins binder nodes, and on the Venus tier adds the NVIDIA render node to the container. |
 | `crownos-android-setup remove [--wipe-data]` | Settings, through `pkexec` (`org.crownos.android.setup`) | Removes the images and overlay, disables the units and deletes the marker. `--wipe-data` also deletes every user's Waydroid data. |
+| `crownos-android-setup enable` | Settings, through `pkexec`, after a reset or to turn Android apps back on | Sets `enabled: true` in `android.ron`, creates the pending marker and starts `crownos-android-setup.service` without waiting for it. |
 | `crownos-android-setup make-manifest --root <dir> --version <v> --pins <json>` | CI bundle build | Writes `manifest.json` for an unpacked bundle. |
 
 ## 6. `android.ron`
@@ -92,7 +93,7 @@ fn send_progress_notification(
 
 The D-Bus `Notify` path keeps reading the `value` hint as percent. Lane L7 also adds:
 - **Resident notifications:** `resident` is honoured, so invoking an action does not close a resident notification.
-- **Activation tokens:** an `ActivationToken` signal is emitted before `ActionInvoked`, with a token from crownui's xdg_activation.
+- **Raising the app:** activating a notification with a `desktop-entry` raises that app's windows through crownui's app-icons API (`activate_app_icon`) before `ActionInvoked`. No `ActivationToken` signal is sent, because crownui 0.1.1 has no xdg-activation token API. The compositor treats crownotify's activation as raise-only (it never minimizes).
 
 ## 10. Naming and packaging
 
