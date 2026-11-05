@@ -71,9 +71,12 @@ import configparser, sys
 channels = configparser.ConfigParser()
 channels.read(sys.argv[1])
 section = channels["channels"]
+# Any channel this file names can be initialised by every local user without
+# polkit, so it must be one that can never be fetched.
 for key in ("system_channel", "vendor_channel"):
-    if not section[key].startswith("file:///var/lib/crownos/android/channel/"):
-        sys.exit(f"{key} does not point at the CrownOS channel")
+    host = section[key].removeprefix("https://").split("/", 1)[0]
+    if not section[key].startswith("https://") or not host.endswith(".invalid"):
+        sys.exit(f"{key} must point at an unresolvable https host (*.invalid)")
 for key in ("rom_type", "system_type"):
     section[key]
 EOF

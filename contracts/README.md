@@ -104,7 +104,7 @@ The D-Bus `Notify` path keeps reading the `value` hint as percent. Lane L7 also 
 ### Packages
 - **`crownos-android`:**
   - Ships `/usr/bin/crown-androidd`, `/usr/bin/crown-android` and `/usr/lib/crownos-android/crownos-android-setup`.
-  - Ships the bundle under `/usr/share/crownos-android/bundle/<version>/`, `channels.cfg` and the units below.
+  - Ships the bundle under `/usr/share/crownos-android/bundle/<version>/`, `channels.cfg` (unresolvable default channels, see the security note in the file) and the units below.
   - Depends on `waydroid lxc python-gbinder libgbinder libglibutil dnsmasq`.
 - **`crownos-android-venus`:** the host render server and the Venus overlay files, installed only on the Venus tier.
 

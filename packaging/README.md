@@ -16,7 +16,7 @@ everything here without root.
 | `usr/share/polkit-1/rules.d/50-crownos-android.rules` | active local sessions may start and stop `waydroid-container.service` and `crownos-android-setup.service` |
 | `usr/share/polkit-1/actions/org.crownos.android.policy` | `org.crownos.android.setup`: `pkexec crownos-android-setup remove [--wipe-data]` |
 | `usr/lib/tmpfiles.d/crownos-android.conf` | `/var/lib/crownos/android` |
-| `usr/share/waydroid-extra/channels.cfg` | Waydroid's default channels point at the local CrownOS channel |
+| `usr/share/waydroid-extra/channels.cfg` | Waydroid's default channels point at an unresolvable host, so the unauthenticated D-Bus `Init` path can never install an image; setup passes its pinned channel with `-c`/`-v` |
 | `usr/lib/NetworkManager/conf.d/50-crownos-android.conf` | NetworkManager leaves `waydroid0` alone |
 | `usr/lib/firewalld/zones/crownos-android.xml` | firewalld trusts `waydroid0` |
 

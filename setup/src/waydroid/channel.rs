@@ -13,7 +13,7 @@ pub const ROM_TYPE: &str = "lineage";
 pub const VENDOR_TYPE: &str = "MAINLINE";
 
 /// The pinned OTA channel under `/var/lib/crownos/android/channel/`, in
-/// ota.waydro.id's layout, which `channels.cfg` names:
+/// ota.waydro.id's layout, passed to `waydroid init` with `-c` and `-v`:
 /// `system/lineage/waydroid_<arch>/<GAPPS|VANILLA>.json` and
 /// `vendor/waydroid_<arch>/MAINLINE.json`.
 pub struct Channel {
