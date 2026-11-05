@@ -39,7 +39,25 @@ Inherited, not fixed here: the binder nodes are 0666, as in stock Waydroid. Trac
 
 ## Correctness: Rust and Java
 
-Pending.
+| Id | Sev | Area | Where | Problem | Fix |
+|---|---|---|---|---|---|
+| R3-H1 | High | agent init | `android/init/crown-agent.rc:10` | The composer runs as `user system` with `group graphics drmrpc` (checked in vendor.img), but the socket is `0660 root system`, so the HWC's connect() fails with EACCES and no window ever gets a slot. | `socket crown_agent stream 0660 system graphics`. SO_PEERCRED still filters peers. |
+| R3-H2 | High | agent | `HostUser.java:39-50`, `Agent.java:100` | Same as X-H1. | See X-H1. |
+| R3-H3 | High | runtime lifecycle | `lifecycle/mod.rs:158,375-378,318` | `Link::Handshake` and `AwaitReady` have no deadline, and the Lost `since` is dropped on reconnect. If an agent reconnects and never sends Ready, launches queue forever and the idle stop never runs. | Carry `since` through Handshake and AwaitReady, and apply `AGENT_RECONNECT_GRACE` to every link state that is not Up. |
+| R3-M4 | Medium | runtime lifecycle | `failure.rs:20`, `mod.rs:290,363`, `effects.rs:48`, `host/waydroid.rs:58` | Host failures (no compositor, polkit, timeout, WouldBlock) count as failed boots. On the third, safe mode is persisted while `prop set` silently does nothing. A slow first boot also triggers safe mode for the whole bundle. | Count only failures at the agent stage or later. Verify the prop with `prop get` before persisting. Re-apply it at the next Ready while safe mode is persisted. Allow the first warm-up boot more time. Merge with X-M4. |
+| R3-M5 | Medium | runtime lifecycle | `mod.rs:419-428` | The daemon sends Shutdown and stops the session at once, so `lxc-stop -k` cuts off `am shutdown(3000)`. | Wait up to 4 s for the agent to close its connection before StopSession (X-L3). |
+| R3-M6 | Medium | runtime host | `host/bus.rs:29-37` | zbus connections have no method timeout, so a wedged `ContainerManager.Stop` leaves the daemon stuck in Stopping. | Build the connections with `method_timeout`, and fall back to systemd StopUnit. |
+| R3-M7 | Medium | setup | `bundle_install/mod.rs:79-113`, `overlay.rs:167-175` | `init -f` and `upgrade` restart a running container while setup rewrites the overlay under the live mount. | Stop `waydroid-container.service` at the start of setup and keep it stopped until setup finishes. |
+| R3-M8 | Medium | splash | `crates/splash/src/client/dispatch.rs:147-150` | Integer `wl_output.scale` overwrites the fractional scale, so Launch sizes are 1.33x too big at a 1.5 scale. | Ignore `wl_output.scale` once fractional-scale feedback has been seen. |
+| R3-M9 | Medium | bench | `bench/src/measure/idle.rs:97-106,160` | The wakeup rate is divided by the total elapsed time instead of the sample span, so it reads about 20% low. | Divide by `sample`. |
+| R3-L10 | Low | runtime agent link | `runtime/src/agent.rs:81` | On `Ok(0)` the daemon returns Closed before decoding buffered bytes, losing the final Hello, TaskClosed or InstallResult. | Decode first, then report the close. |
+| R3-L11 | Low | setup | `commands/enable.rs:14-20` | `enable` writes `android.ron` before the marker, so the daemon briefly sees Installed with no images. | Write the marker and `setup.json` first. |
+| R3-L12 | Low | setup | `commands/remove.rs:25-29` | `remove` doesn't stop a running setup, which later saves `enabled: true`. | Stop `crownos-android-setup.service` first. |
+| R3-L13 | Low | daemon | `splash security_context.rs:61`, `Splashes::connect`, `notify/mod.rs:199,275` | A WouldBlock flush is treated as an error (and feeds R3-M4), and blocking roundtrips and 2 s waits stall the loop. | Treat WouldBlock as success, and use deadlines and non-blocking waits. |
+| R3-L14 | Low | daemon | `event_loop.rs:239-241` | Records later in the batch that triggered a stop are still applied. | Stop feeding records once the phase leaves Booting or Running. |
+| R3-L15 | Low | runtime | `mod.rs:260-267`, `event_loop.rs:192-197` | `stop` during Stopping leaves queued launches, which boot Android again. | Fail the queued errands when stop is called during Stopping. |
+| R3-L16 | Low | runtime | `records.rs:28-33` | After `adopt`, tasks have no package, so launching an open app leaves its splash up for 120 s. | Close the splash on a matching TaskOpened or any already-open task (with X-M1), and learn packages from TaskOpened. |
+| R3-L17 | Low | cli, desktop-entries, bench | `cli/src/main.rs:71-74`; `desktop-entries mirror.rs:39-40`; `bench launch.rs:110`, `budget.rs:53-55` | The CLI leaves its inbox copy behind on a refused call. The mirror overwrites the user's NoDisplay. The bench records a lone splash as the first frame, and memory falls back to the one-app limit. | Remove the copy on failure. Keep the user's NoDisplay. Record the timeout as not measured. Mark memory as not measured when windows are unknown. |
 
 ## Cross-component consistency
 
