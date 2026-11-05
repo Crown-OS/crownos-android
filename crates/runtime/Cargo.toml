@@ -10,6 +10,21 @@ license.workspace = true
 name = "runtime"
 
 [dependencies]
+agent-wire.workspace = true
+android-protocol.workspace = true
+setup-state.workspace = true
+venus.workspace = true
+crownos-config.workspace = true
+crownos-ipc.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+log.workspace = true
+rustix = { workspace = true, features = ["fs", "net", "process"] }
+zbus = { workspace = true, features = ["async-io"] }
+ron = "0.12"
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+rustix = { workspace = true, features = ["event"] }
