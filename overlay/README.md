@@ -41,7 +41,10 @@ file's sha256 while copying it.
 
    The result is `~/.cache/crownos-android/bundle/2026.11.0/` and
    `bundle-2026.11.0.tar.zst`, the source artifact of the `crownos-android`
-   PKGBUILD. Without `--key` the tree is built unsigned, for inspection only.
+   PKGBUILD. The archive holds the tree's contents, with `manifest.json` and
+   `manifest.json.minisig` at its root, so the PKGBUILD unpacks it straight
+   into `bundle/<version>/`. Without `--key` the tree is built unsigned, for
+   inspection only.
    `HWC_OUT`, `AGENT_OUT`, `--out`, `--whiteouts` and `--setup <binary>`
    override the defaults. A missing artifact stops the build with the command
    that produces it.
@@ -124,7 +127,8 @@ proves the committed key has a secret that someone holds.
 - **Sign** on the offline machine: copy the unsigned tree there, run
   `minisign -S -s crownos-android.key -m manifest.json -t "crownos-android bundle <version>"`,
   check it with `minisign -V -p crownos-android.pub -m manifest.json`, and copy
-  `manifest.json.minisig` back. Then pack the tarball as `build-bundle.sh` does.
+  `manifest.json.minisig` back. Then pack the tarball from inside the tree,
+  as `build-bundle.sh` does (`tar -C <tree> ... .`).
 - **Rotate** by shipping a `crownos-android` package whose `keys.rs` holds the
   new key, together with a bundle signed by it. The binary and the bundle
   travel in one package, so they never disagree.

@@ -12,7 +12,9 @@
 #   AGENT_OUT  ~/.cache/crownos-android/agent/out
 #              crown-agent.jar, crown-agent.rc, CrownHome.apk and the overlay
 #              *.apk files (android/agent/build.sh, android/overlays/build.sh)
-# Output: DIR/<version>/ (DIR defaults to ~/.cache/crownos-android/bundle).
+# Output: DIR/<version>/ (DIR defaults to ~/.cache/crownos-android/bundle), and
+# once signed DIR/bundle-<version>.tar.zst holding that tree's contents, with
+# manifest.json and manifest.json.minisig at the archive root.
 set -euo pipefail
 
 here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
@@ -33,7 +35,7 @@ while (($#)); do
         --out) out=${2:?}; shift 2 ;;
         --whiteouts) whiteouts=${2:?}; shift 2 ;;
         --setup) setup=("${2:?}"); shift 2 ;;
-        *) sed -n '2,16p' "${BASH_SOURCE[0]}" >&2; exit 2 ;;
+        *) sed -n '2,18p' "${BASH_SOURCE[0]}" >&2; exit 2 ;;
     esac
 done
 [[ $version =~ ^[0-9A-Za-z][0-9A-Za-z._-]*$ ]] || die "--version needs a version such as 2026.11.0"
@@ -77,6 +79,6 @@ if [[ -z $key ]]; then
     echo "built $tree (unsigned: setup refuses it until it is signed with --key)"
     exit 0
 fi
-tar -C "$out" --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
-    -I 'zstd -19 -T0' -cf "$out/bundle-$version.tar.zst" "$version"
+tar -C "$tree" --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
+    -I 'zstd -19 -T0' -cf "$out/bundle-$version.tar.zst" .
 echo "built $tree and $out/bundle-$version.tar.zst"
