@@ -39,10 +39,22 @@ final class TaskResizer {
         this.listener = listener;
     }
 
-    void request(TaskState task, int width, int height, int serial) {
+    /** A SetSize from the hwcomposer; it replaces any size still waiting for this task. */
+    void resize(TaskState task, int width, int height, int serial) {
         SizeRequest started = coalescer.submit(new SizeRequest(task.id, width, height, serial));
         if (started != null) {
             apply(task, started);
+        }
+    }
+
+    /**
+     * Moves the task to this size on the agent's own account, acknowledged with the serial the host
+     * already has. Skipped while the task is busy, so it never displaces a SetSize; a finishing resize
+     * catches up with the atlas instead.
+     */
+    void refit(TaskState task, int width, int height) {
+        if (!coalescer.isBusy(task.id)) {
+            resize(task, width, height, task.appliedSerial);
         }
     }
 
@@ -137,6 +149,11 @@ final class TaskResizer {
         SizeRequest next = coalescer.complete(request);
         if (next != null) {
             apply(task, next);
+            return;
+        }
+        Slot reserved = atlas.slotOf(task.id);
+        if (reserved != null && !reserved.equals(task.slot)) {
+            refit(task, reserved.width, reserved.height);
         }
     }
 }

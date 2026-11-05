@@ -163,7 +163,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             AgentLog.warn("SetSize for task " + taskId + ", which is not a window");
             return;
         }
-        resizer.request(task, Math.max(Dimensions.fromWire(width, displayWidth), task.snapshot.minWidth),
+        resizer.resize(task, Math.max(Dimensions.fromWire(width, displayWidth), task.snapshot.minWidth),
                 Math.max(Dimensions.fromWire(height, displayHeight), task.snapshot.minHeight), serial);
     }
 
@@ -252,7 +252,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             return;
         }
         if (!snapshot.isFreeform() && (previous == null || previous.isFreeform())) {
-            resizer.request(task, task.slot.width, task.slot.height, task.appliedSerial);
+            resizer.refit(task, task.slot.width, task.slot.height);
             return;
         }
         reconcile(task);
@@ -277,7 +277,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         }
         reporter.opened(task);
         if (placement == TaskPlacement.ORGANIZED) {
-            resizer.request(task, task.slot.width, task.slot.height, task.appliedSerial);
+            resizer.refit(task, task.slot.width, task.slot.height);
         } else {
             reporter.slot(task, ownBounds(snapshot));
         }
@@ -301,7 +301,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             return;
         }
         task.refusedBounds = new Rect(bounds);
-        resizer.request(task, bounds.width(), bounds.height(), task.appliedSerial);
+        resizer.refit(task, bounds.width(), bounds.height());
     }
 
     private void finishLaunch(PendingLaunch launch, TaskState task) {
@@ -330,7 +330,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         for (Integer moved : atlas.remove(key)) {
             TaskState task = tasks.get(moved);
             if (task != null && task.isWindow()) {
-                resizer.request(task, task.slot.width, task.slot.height, task.appliedSerial);
+                resizer.refit(task, task.slot.width, task.slot.height);
             }
         }
     }
