@@ -6,12 +6,36 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
+[lib]
+name = "android_setup"
+path = "src/lib.rs"
+
 [[bin]]
 name = "crownos-android-setup"
 path = "src/main.rs"
 
 [dependencies]
 anyhow.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+hex.workspace = true
+log.workspace = true
+rustix = { workspace = true, features = ["mount"] }
+libc = "0.2"
+bundle.workspace = true
+setup-state.workspace = true
+venus.workspace = true
+crownos-config.workspace = true
+ureq = { version = "3.5", default-features = false, features = ["rustls"] }
+zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+
+[dev-dependencies]
+minisign-verify.workspace = true
+base64 = "0.22"
+blake2 = "0.10"
+ring = "0.17"
 
 [lints]
 workspace = true

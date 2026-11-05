@@ -1,0 +1,49 @@
+{
+  "waydroid": "1.6.3",
+  "images": [
+    {
+      "flavor": "gapps",
+      "arch": "x86_64",
+      "system": {
+        "datetime": 1775208984,
+        "filename": "lineage-20.0-20260403-GAPPS-waydroid_x86_64-system.zip",
+        "id": "811ab2dd7ad1b0b4964bddf020fa450275ea1af2d5b0ac10d5ceced0ac1908a3",
+        "romtype": "GAPPS",
+        "size": 1190930612,
+        "url": "https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20260403-GAPPS-waydroid_x86_64-system.zip/download",
+        "version": "20.0"
+      },
+      "vendor": {
+        "datetime": 1777409843,
+        "filename": "lineage-20.0-20260428-MAINLINE-waydroid_x86_64-vendor.zip",
+        "id": "cba35433ffca73ed349e096b1daec495b3204e01c0e541c4203671e6d648e874",
+        "romtype": "MAINLINE",
+        "size": 189192029,
+        "url": "https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20.0-20260428-MAINLINE-waydroid_x86_64-vendor.zip/download",
+        "version": "20.0"
+      }
+    },
+    {
+      "flavor": "vanilla",
+      "arch": "x86_64",
+      "system": {
+        "datetime": 1775215493,
+        "filename": "lineage-20.0-20260403-VANILLA-waydroid_x86_64-system.zip",
+        "id": "2e343b14c649a685853e7957ac34feb1ca110425d78a47ebad764caae24116a8",
+        "romtype": "VANILLA",
+        "size": 838353482,
+        "url": "https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_x86_64/lineage-20.0-20260403-VANILLA-waydroid_x86_64-system.zip/download",
+        "version": "20.0"
+      },
+      "vendor": {
+        "datetime": 1777409843,
+        "filename": "lineage-20.0-20260428-MAINLINE-waydroid_x86_64-vendor.zip",
+        "id": "cba35433ffca73ed349e096b1daec495b3204e01c0e541c4203671e6d648e874",
+        "romtype": "MAINLINE",
+        "size": 189192029,
+        "url": "https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_x86_64/lineage-20.0-20260428-MAINLINE-waydroid_x86_64-vendor.zip/download",
+        "version": "20.0"
+      }
+    }
+  ]
+}
