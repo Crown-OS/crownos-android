@@ -6,7 +6,15 @@
 //! [`container_mount_line`]; `crown-androidd` starts [`RENDER_SERVICE`] before
 //! the session. These signatures are contract 13; lane L10 owns the bodies.
 
+mod drm;
+mod nvidia;
+mod udmabuf;
+mod util;
+
 use std::path::{Path, PathBuf};
+
+use drm::Card;
+use nvidia::OpenModuleVersion;
 
 /// User unit running the host render server.
 pub const RENDER_SERVICE: &str = "crownos-android-render.service";
@@ -41,9 +49,30 @@ pub enum VenusError {
 /// under `proc_root`. `None` means the machine uses another tier: the
 /// compositor GPU is not NVIDIA, the kernel module is closed, the driver is
 /// older than [`MIN_DRIVER_MAJOR`], modeset is off or `/dev/udmabuf` is missing.
+///
+/// The compositor GPU is the boot VGA card, as in crownpositor. udmabuf is
+/// read as the sysfs misc device `class/misc/udmabuf`, which devtmpfs turns
+/// into `/dev/udmabuf`, so a fake sysfs tree covers every check.
 pub fn detect(sys: &Path, proc_root: &Path) -> Result<Option<Support>, VenusError> {
-    let _ = (sys, proc_root);
-    Ok(None)
+    let Some(card) = Card::compositor(sys)? else {
+        return Ok(None);
+    };
+    if !card.is_driven_by(nvidia::DRIVER)? {
+        return Ok(None);
+    }
+    let Some(version) = OpenModuleVersion::read(proc_root)? else {
+        return Ok(None);
+    };
+    if version.major() < MIN_DRIVER_MAJOR
+        || !nvidia::modeset_enabled(sys)?
+        || !udmabuf::is_registered(sys)?
+    {
+        return Ok(None);
+    }
+    Ok(card.render_node()?.map(|render_node| Support {
+        render_node,
+        driver_version: version.into_string(),
+    }))
 }
 
 /// Overlay paths, relative to the overlay root, that [`OVERLAY_SOURCE`] provides.
