@@ -52,7 +52,7 @@ Ground rules for every agent:
 - [x] L1 compositor protocol server and trust check: crownpositor cd89e60, 85b7ded, f12456a; crownos-protocols 4547114 on android/compositor
 - [x] L2 compositor window behaviour (same commits; 652 + 150 + 7 tests)
 - [~] L3 HWC fork
-- [x] L4 agent: 5a3fbb6, b7dc287, fed984a, 2aa49a5, d519ac5 on android/agent; 29 host tests (addendum: Back-parking policy in progress)
+- [x] L4 agent: 5a3fbb6, b7dc287, fed984a, 2aa49a5, d519ac5, 55880c2 (Back parking) on android/agent; 35 host tests
 - [~] L5 crown-androidd and crown-android
 - [~] L6 setup service and bundle tooling
 - [x] L7 crownotify (crownui unchanged): commits dd2b4e8, 75a3385, a05209b, 22b4445 on android/notify; 364 tests
