@@ -76,6 +76,16 @@ final class TaskSnapshot {
         return windowingMode == WINDOWING_MODE_FREEFORM;
     }
 
+    /** Lost focus or visibility since {@code previous}, as a task sent behind the others does. */
+    boolean leftFrontSince(TaskSnapshot previous) {
+        return previous != null && (previous.focused && !focused || previous.visible && !visible);
+    }
+
+    /** Gained focus or visibility since {@code previous}, as a task brought to the front does. */
+    boolean cameToFrontSince(TaskSnapshot previous) {
+        return previous != null && (!previous.focused && focused || !previous.visible && visible);
+    }
+
     boolean hasLaunchCookie(IBinder cookie) {
         return launchCookies != null && launchCookies.contains(cookie);
     }

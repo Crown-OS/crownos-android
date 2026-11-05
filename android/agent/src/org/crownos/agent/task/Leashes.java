@@ -23,6 +23,13 @@ final class Leashes {
         }
     }
 
+    /** Hides the leash of a task whose window closed while the task keeps running. */
+    static void hide(SurfaceControl leash) {
+        try (SurfaceControl.Transaction transaction = new SurfaceControl.Transaction()) {
+            transaction.setVisibility(leash, false).apply();
+        }
+    }
+
     static SurfaceControl.Transaction place(SurfaceControl.Transaction transaction, SurfaceControl leash, Slot slot) {
         return transaction.setPosition(leash, slot.left, slot.top)
                 .setCrop(leash, new Rect(0, 0, slot.width, slot.height));

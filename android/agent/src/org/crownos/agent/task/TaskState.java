@@ -28,4 +28,14 @@ final class TaskState {
     boolean isWindow() {
         return slot != null;
     }
+
+    /** Forgets everything about the host window; the task itself stays. */
+    void closeWindow() {
+        slot = null;
+        placedLeash = null;
+        appliedSerial = 0;
+        refusedBounds = null;
+        announced = false;
+        sentInfo = null;
+    }
 }

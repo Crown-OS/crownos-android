@@ -50,7 +50,9 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         task.leash = leash;
         task.snapshot = snapshot;
         task.placedLeash = null;
-        if (leash != null) {
+        if (leash != null && tasks.isParked(task.id)) {
+            Leashes.hide(leash);
+        } else if (leash != null) {
             Slot where = task.isWindow() ? task.slot : display.boundsOf(snapshot);
             Leashes.show(leash, where);
             task.placedLeash = where;
@@ -136,6 +138,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     }
 
     public void focus(int taskId) {
+        tasks.parking().hostFocused(taskId);
         if (tasks.window(taskId) != null) {
             atlas.focus(taskId);
             TaskControl.focus(taskId);
@@ -156,6 +159,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         if (!task.snapshot.focused) {
             TaskControl.focus(taskId);
         }
+        tasks.parking().backPressed(taskId);
         TaskControl.back(task.snapshot.displayId);
     }
 
@@ -175,8 +179,12 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
 
     @Override
     public boolean onLaunchResolved(PendingLaunch launch, int taskId) {
-        TaskState task = tasks.window(taskId);
-        if (task == null) {
+        TaskState task = tasks.get(taskId);
+        if (task != null && tasks.parking().cameToFront(taskId)) {
+            reopenWindow(task, launch);
+            return true;
+        }
+        if (task == null || !task.isWindow()) {
             return false;
         }
         finishLaunch(launch, task);
@@ -204,8 +212,18 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             placeLeash(task, display.boundsOf(snapshot));
             return;
         }
+        if (tasks.isParked(task.id)) {
+            if (snapshot.cameToFrontSince(previous) && tasks.parking().cameToFront(task.id)) {
+                reopenWindow(task, launcher.claim(snapshot));
+            }
+            return;
+        }
         if (!task.isWindow()) {
-            openWindow(task);
+            openWindow(task, launcher.claim(snapshot));
+            return;
+        }
+        if (snapshot.leftFrontSince(previous) && tasks.parking().leftFront(task.id)) {
+            park(task);
             return;
         }
         if (snapshot.focused && (previous == null || !previous.focused)) {
@@ -226,9 +244,9 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         reconcile(task);
     }
 
-    private void openWindow(TaskState task) {
+    /** Makes an app task a window; {@code launch} is the Launch that produced it, or {@code null}. */
+    private void openWindow(TaskState task, PendingLaunch launch) {
         TaskSnapshot snapshot = task.snapshot;
-        PendingLaunch launch = launcher.claim(snapshot);
         if (launch != null) {
             atlas.rename(launch.reservation, task.id);
         }
@@ -250,6 +268,31 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             resizer.refit(task, task.slot.width, task.slot.height);
         } else {
             reporter.slot(task, display.boundsOf(snapshot));
+        }
+    }
+
+    /**
+     * Back sent the task behind the others: its window closes for the host and the daemon, the app
+     * keeps running in Android, and its slot goes back to the atlas.
+     */
+    private void park(TaskState task) {
+        AgentLog.info("Back sent task " + task.id + " behind; closing its window, the app keeps running");
+        reporter.removed(task);
+        resizer.forget(task.id);
+        task.closeWindow();
+        if (task.leash != null) {
+            Leashes.hide(task.leash);
+        }
+        releaseSlot(task.id);
+    }
+
+    /** A parked task came to the front again: a new window in a fresh slot, from serial 0. */
+    private void reopenWindow(TaskState task, PendingLaunch launch) {
+        AgentLog.info("parked task " + task.id + " came to the front; it gets a window again");
+        openWindow(task, launch);
+        if (task.leash != null) {
+            Leashes.show(task.leash, task.slot);
+            task.placedLeash = task.slot;
         }
     }
 

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 
 import org.crownos.agent.atlas.AtlasTest;
 import org.crownos.agent.keepalive.KeepAliveProbeTest;
+import org.crownos.agent.parking.BackParkingTest;
 import org.crownos.agent.policy.PolicyTest;
 import org.crownos.agent.sizing.ResizeCoalescerTest;
 import org.crownos.agent.wire.WireCodecTest;
@@ -38,6 +39,7 @@ public final class TestRunner {
         ResizeCoalescerTest.run(runner);
         PolicyTest.run(runner);
         KeepAliveProbeTest.run(runner);
+        BackParkingTest.run(runner);
         System.out.println(runner.passed + " passed, " + runner.failed + " failed");
         System.exit(runner.failed == 0 ? 0 : 1);
     }

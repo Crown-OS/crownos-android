@@ -6,7 +6,7 @@ set -euo pipefail
 agent_dir="$(cd "$(dirname "$0")" && pwd)"
 vectors="$agent_dir/../../contracts/agent-wire-vectors.txt"
 work="${CROWN_AGENT_WORK:-$HOME/.cache/crownos-android/agent}/host-test"
-pure_packages=(wire atlas sizing policy keepalive)
+pure_packages=(wire atlas sizing policy keepalive parking)
 
 rm -rf "$work"
 mkdir -p "$work/classes"
