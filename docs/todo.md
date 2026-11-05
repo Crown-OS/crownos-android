@@ -55,9 +55,9 @@ Ground rules for every agent:
 - [~] L4 agent
 - [~] L5 crown-androidd and crown-android
 - [~] L6 setup service and bundle tooling
-- [~] L7 crownotify and crownui
-- [~] L8 installer, settings and crownos-config
-- [~] L9 ISO and pkgbuilds
+- [x] L7 crownotify (crownui unchanged): commits dd2b4e8, 75a3385, a05209b, 22b4445 on android/notify; 364 tests
+- [x] L8 installer and settings: installer 2991783, 1fe3c44; settings 8e7a2a9 on android/installer; 311 + 178 tests
+- [x] L9 ISO and pkgbuilds: crownos-android 2eb491f, crownos-pkgbuilds 3f68ffe, crownos-iso 9a4453b..4d40021 on android/iso
 - [~] L10 Venus tier
 
 ## Wave 3: integration
