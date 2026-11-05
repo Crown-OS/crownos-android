@@ -41,29 +41,29 @@ Ground rules for every agent:
 - [ ] Go/no-go review of S1 and S2, and the fallbacks chosen.
 
 ## Wave 1: lead
-- [~] Freeze contracts 1 to 10 in `contracts/`.
+- [x] Freeze contracts 1 to 13 in `contracts/`.
   - Contracts 4, 5, 6, 7, 8, 9 and 10 are frozen. Crates `android-protocol`, `setup-state` and `bundle` hold the golden tests, and fmt, clippy and test are green.
-  - Contracts 1, 2 and 3 are drafted in `contracts/agent-wire.md`. They freeze after S1 and S2.
-- [ ] Scaffold the workspace and the shared registration points in crownpositor, crownos-protocols, crownos-config and crownos-iso.
-- [ ] Build the fakes: fake HWC client, mock protocol server, fake agent, dbusmock, fake waydroid, mock crownotify.
-- [ ] Write the lane briefs in `docs/briefs/`, and create a worktree per lane.
+  - Contracts 1, 2, 3, 11, 12 and 13 frozen after the offline spikes (the user deferred runtime tests).
+- [x] Scaffold the workspace, plus the `android/base` branches of crownos-protocols (protocol + macro) and crownos-config (android section, android.ron).
+- [x] Fakes: each lane builds the ones it needs (see its brief).
+- [x] Lane briefs in `docs/briefs/`, worktrees under `~/crownos-lanes/<lane>` (`tools/lane.sh`), builds serialized by `~/crownos-lanes/bin/build-slot`.
 
 ## Wave 2: lanes
-- [ ] L1 compositor protocol server and trust check
-- [ ] L2 compositor window behaviour
-- [ ] L3 HWC fork
-- [ ] L4 agent
-- [ ] L5 crown-androidd and crown-android
-- [ ] L6 setup service and bundle tooling
-- [ ] L7 crownotify and crownui
-- [ ] L8 installer, settings and crownos-config
-- [ ] L9 ISO and pkgbuilds
-- [ ] L10 Venus tier
+- [~] L1 compositor protocol server and trust check
+- [~] L2 compositor window behaviour
+- [~] L3 HWC fork
+- [~] L4 agent
+- [~] L5 crown-androidd and crown-android
+- [~] L6 setup service and bundle tooling
+- [~] L7 crownotify and crownui
+- [~] L8 installer, settings and crownos-config
+- [~] L9 ISO and pkgbuilds
+- [~] L10 Venus tier
 
 ## Wave 3: integration
 - [ ] E1 hardware end-to-end
 - [ ] E2 ISO and QEMU install test
-- [ ] E3 bench harness and process-monitor identity
+- [~] E3 bench harness and process-monitor identity (runs as Wave 2 lane `bench`)
 
 ## Wave 4: optimization
 - [ ] P1 Android memory and boot
