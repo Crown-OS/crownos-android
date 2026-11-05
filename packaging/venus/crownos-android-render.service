@@ -1,0 +1,11 @@
+[Unit]
+Description=Venus render server for CrownOS Android apps
+Documentation=file:///usr/share/doc/crownos-android-venus/README.md
+Before=crownos-android-session.service
+
+[Service]
+Environment=VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+ExecStartPre=/usr/bin/mkdir -p -m 0711 %h/.local/share/waydroid/data/crownos/venus
+ExecStart=/usr/lib/crownos-android/venus/virgl_test_server --venus --no-virgl --multi-clients --socket-path %h/.local/share/waydroid/data/crownos/venus/venus.sock
+Restart=on-failure
+RestartSec=1
