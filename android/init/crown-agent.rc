@@ -7,5 +7,5 @@ service crown_agent /system/bin/app_process64 /system/bin org.crownos.agent.Main
     user root
     group root system
     setenv CLASSPATH /system/framework/crown-agent.jar
-    socket crown_agent stream 0660 root system
+    socket crown_agent stream 0660 system graphics
     restart_period 1
