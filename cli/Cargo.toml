@@ -11,6 +11,9 @@ name = "crown-android"
 path = "src/main.rs"
 
 [dependencies]
+android-protocol.workspace = true
+runtime.workspace = true
+crownos-ipc.workspace = true
 anyhow.workspace = true
 
 [lints]
