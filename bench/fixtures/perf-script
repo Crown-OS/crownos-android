@@ -1,0 +1,6 @@
+comm=surfaceflinger pid=812 prio=98 target_cpu=003
+comm=Binder:812_2 pid=1093 prio=120 target_cpu=005
+comm=kworker/u32:4 pid=211 prio=120 target_cpu=000
+comm=crownpositor pid=2201 prio=120 target_cpu=007
+comm=surfaceflinger pid=812 prio=98 target_cpu=003
+lost 3 chunks

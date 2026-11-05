@@ -1,0 +1,134 @@
+# Budgets of the Android runtime: the plan's "Budgets" table, one entry per number.
+#
+#   unit           ms, s, MiB, percent (of one core), per_second, count or fps
+#   limit          the ceiling, or the floor with bound = "min"
+#   per_extra_app  added to the limit for every Android app with a window beyond the first
+#   noise          a change from the baseline this small is not a regression
+#   method         how the number is taken
+#
+# The plan's MB are MiB, as in the S3 measurements. crown-android-bench fails a
+# run when a number misses its limit, or is more than 10% and more than `noise`
+# worse than the baseline run. Entries it does not take are listed as not measured.
+
+[launch.splash]
+unit = "ms"
+limit = 100
+noise = 10
+method = "crown-android launch until the splash toplevel is listed in ext-foreign-toplevel-list"
+
+[launch.cold_first_frame]
+unit = "s"
+limit = 12
+noise = 0.5
+method = "crown-android launch with Android stopped, until the app's own toplevel is listed"
+
+[launch.warm_first_frame]
+unit = "s"
+limit = 1.5
+noise = 0.1
+method = "crown-android launch with Android running, until the app's own toplevel is listed"
+
+[launch.raise]
+unit = "ms"
+limit = 300
+method = "crown-android launch of an app that has a window, until wp_presentation shows it raised"
+
+[resize.sharp_buffer]
+unit = "ms"
+limit = 250
+method = "drag end until a buffer of the new size is committed, from configure serial timestamps"
+
+[memory.android]
+unit = "MiB"
+limit = 1200
+per_extra_app = 250
+noise = 25
+method = "memory.current of the LXC payload cgroup after the launches settle"
+
+[memory.hwc]
+unit = "MiB"
+limit = 40
+noise = 2
+method = "Rss in smaps_rollup of the composer HAL process (root)"
+
+[memory.agent]
+unit = "MiB"
+limit = 60
+noise = 3
+method = "Pss in smaps_rollup of crown-agent (root)"
+
+[memory.daemon]
+unit = "MiB"
+limit = 10
+noise = 1
+method = "Pss in smaps_rollup of crown-androidd"
+
+[idle.android_cpu]
+unit = "percent"
+limit = 2
+noise = 0.2
+method = "usage_usec in cpu.stat of the LXC payload cgroup over the idle sample"
+
+[idle.android_wakeups]
+unit = "per_second"
+limit = 50
+noise = 5
+method = "perf sched:sched_wakeup events whose wakee is an Android thread (root)"
+
+[idle.daemon_cpu]
+unit = "percent"
+limit = 0.1
+method = "utime and stime of crown-androidd over the idle sample; the plan's 0%, read as under one 10 ms tick per 10 s"
+
+[idle_stop.stop]
+unit = "s"
+limit = 10
+noise = 0.5
+method = "crown-android stop until no Waydroid process or rootfs mount is left; the plan's 5 min 10 s is the 5 min idle timer plus this"
+
+[idle_stop.leftover_processes]
+unit = "count"
+limit = 0
+method = "Waydroid processes and payload cgroup members once the stop settled"
+
+[idle_stop.leftover_mounts]
+unit = "count"
+limit = 0
+method = "mounts under /var/lib/waydroid/rootfs once the stop settled"
+
+[idle_stop.mem_available]
+unit = "MiB"
+limit = 50
+noise = 10
+method = "MemAvailable before Android started minus MemAvailable after it stopped"
+
+[frames.commit_latency]
+unit = "ms"
+limit = 2
+method = "SurfaceFlinger commit to the HWC's wl_surface.commit, p99, from Perfetto in Android and crownpositor spans on CLOCK_BOOTTIME"
+
+[frames.input_to_photon_p50]
+unit = "ms"
+limit = 50
+method = "input event to presentation, p50, with the echo-timestamp test APK"
+
+[frames.input_to_photon_p99]
+unit = "ms"
+limit = 80
+method = "input event to presentation, p99, with the echo-timestamp test APK"
+
+[frames.scroll]
+unit = "fps"
+limit = 60
+bound = "min"
+method = "frame rate while scrolling, on the GPU tiers"
+
+[setup.duration]
+unit = "s"
+limit = 600
+method = "crownos-android-setup from start to Ready on a 50 Mbps link, from setup.json timestamps"
+
+[setup.frame_time_regression]
+unit = "ms"
+limit = 2
+method = "compositor p99 frame time while setup runs, minus without it, from the frame clock"
