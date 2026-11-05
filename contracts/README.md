@@ -4,16 +4,46 @@ Every lane builds against these contracts and nothing else. A contract changes o
 
 | # | Contract | Status | Source of truth |
 |---|---|---|---|
-| 1 | `crownos-android-shell-v1` Wayland protocol | draft until S1/S2 | `crownos-protocols/protocols/crownos-android-shell-v1.xml` (Wave 1) |
-| 2 | HWC ⇄ agent records | draft until S1/S2 | [agent-wire.md](agent-wire.md) |
-| 3 | daemon ⇄ agent records | draft until S1 | [agent-wire.md](agent-wire.md) |
+| 1 | `crownos-android-shell-v1` Wayland protocol | frozen v1 | `crownos-protocols` branch `android/base`, `protocols/crownos-android-shell-v1.xml` |
+| 2 | HWC ⇄ agent records | frozen v1 | `crates/agent-wire` and `agent-wire-vectors.txt` |
+| 3 | daemon ⇄ agent records | frozen v1 | `crates/agent-wire` and `agent-wire-vectors.txt` |
 | 4 | `crownos-android` crownos-ipc service | frozen v1 | `crates/android-protocol` |
 | 5 | `setup.json` | frozen v1 | `crates/setup-state` |
-| 6 | `android.ron` (system and user) | frozen v1 | below; lane L8 adds it to crownos-config |
-| 7 | crownotify progress notifications | frozen v1 | below; lane L7 adds it to `crownotify/src/proto.rs` |
+| 6 | `android.ron` (system and user) | frozen v1 | `crownos-config` branch `android/base`: `system/android.rs`, `schema/android.rs` |
+| 7 | crownotify progress notifications | frozen v1 | below; the notify lane adds it to `crownotify/src/proto.rs` |
 | 8 | overlay bundle manifest | frozen v1 | `crates/bundle` (`Manifest`) |
 | 9 | image pins and OTA channel | frozen v1 | `crates/bundle` (`ImagePin`, `OtaChannel`) |
 | 10 | naming and packaging | frozen v1 | below |
+| 11 | Android properties | frozen v1 | below |
+| 12 | `crownos-android-setup` command line | frozen v1 | below |
+| 13 | `crates/venus` API | frozen v1 | `crates/venus/src/lib.rs` signatures |
+
+## 11. Android properties
+
+The bundle's `props` set these through `waydroid.cfg [properties]`. The HWC and the agent read them; nothing else may depend on other props.
+
+| Property | Value | Read by | Meaning |
+|---|---|---|---|
+| `ro.crownos.bundle` | bundle version | HWC, agent | Sent in `Hello`. A mismatch with the peer means safe mode. |
+| `persist.crownos.safe_mode` | `0` or `1` | HWC, agent | `1`: the agent does not organize tasks, and the HWC uses stock Waydroid multi-window. Set at runtime by the daemon through `waydroid prop set`. |
+| `persist.waydroid.multi_windows` | `true` | HWC | Per-task windows. |
+| `persist.waydroid.width`, `persist.waydroid.height` | `4096` | HWC | Fixed Android display size in pixels: the atlas the agent packs tasks into. Never follows a host configure. |
+| `persist.wm.debug.caption_on_shell` | `true` | framework | Removes the app-side caption (S1). |
+| `persist.waydroid.suspend` | `false` | Waydroid | The daemon owns the lifecycle; Android must not freeze itself. |
+| `debug.sf.nobootanimation` | `1` | SurfaceFlinger | No boot animation. |
+
+At boot the agent sets `waydroid.active_apps` to `crownos`, which makes the stock HWC mode selection pick multi-window.
+
+## 12. `crownos-android-setup` command line
+
+Runs as root. Every subcommand writes `setup.json` when it changes setup state.
+
+| Command | Caller | Does |
+|---|---|---|
+| `crownos-android-setup run` | `crownos-android-setup.service` | The first-boot setup. It is idempotent and resumes after a reboot. |
+| `crownos-android-setup prepare-container` | `ExecStartPre=` drop-in on `waydroid-container.service` | Pins binder nodes, and on the Venus tier adds the NVIDIA render node to the container. |
+| `crownos-android-setup remove [--wipe-data]` | Settings, through `pkexec` (`org.crownos.android.setup`) | Removes the images and overlay, disables the units and deletes the marker. `--wipe-data` also deletes every user's Waydroid data. |
+| `crownos-android-setup make-manifest --root <dir> --version <v> --pins <json>` | CI bundle build | Writes `manifest.json` for an unpacked bundle. |
 
 ## 6. `android.ron`
 

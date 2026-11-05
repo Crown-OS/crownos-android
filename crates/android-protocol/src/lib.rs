@@ -40,6 +40,9 @@ crownos_ipc::protocol! {
         fn status() -> RuntimeStatus;
         /// Write a diagnostics archive and return its path.
         fn diagnose() -> String;
+        /// The Google services framework id to register at
+        /// <https://www.google.com/android/uncertified>, once Android has one.
+        fn google_registration_id() -> Option<String>;
         event RuntimeChanged { status: RuntimeStatus };
         event SetupProgress { status: SetupStatus };
     }
