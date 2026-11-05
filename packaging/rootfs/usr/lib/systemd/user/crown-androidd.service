@@ -1,0 +1,16 @@
+# Started by its socket, or by crown-androidd.path while setup is pending. It
+# starts crownos-android-session.service, which has no dependency on it, so the
+# daemon exiting or restarting never stops Android.
+
+[Unit]
+Description=CrownOS Android apps manager
+Documentation=https://github.com/Crown-OS/crownos-android
+Requires=crown-androidd.socket
+After=crown-androidd.socket
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/crown-androidd
+Restart=on-failure
+NoNewPrivileges=yes
+LockPersonality=yes

@@ -1,0 +1,15 @@
+# The one Waydroid session, started and stopped by crown-androidd; no [Install].
+# Everything else in its environment comes from the user manager. WAYLAND_DISPLAY
+# is the security-context socket crown-androidd listens on, set here rather than
+# in the manager so no other user service ever connects through it.
+
+[Unit]
+Description=Android apps session
+Documentation=https://github.com/Crown-OS/crownos-android
+
+[Service]
+Type=exec
+Environment=WAYLAND_DISPLAY=%t/crownos/android-wayland.sock
+Environment=XDG_DATA_HOME=%h/.local/share/crownos/android
+ExecStart=/usr/bin/waydroid session start
+ExecStop=/usr/bin/waydroid session stop

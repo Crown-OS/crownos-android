@@ -1,0 +1,16 @@
+# Starts crown-androidd at login while the root setup still has work to do, so
+# its progress notification appears without any client connecting. The daemon
+# stays up while the marker exists; the trigger limit stops a restart loop if it
+# does not.
+
+[Unit]
+Description=Show the progress of the Android apps setup
+Documentation=https://github.com/Crown-OS/crownos-android
+
+[Path]
+PathExists=/var/lib/crownos/android/pending
+TriggerLimitIntervalSec=10min
+TriggerLimitBurst=3
+
+[Install]
+WantedBy=paths.target
