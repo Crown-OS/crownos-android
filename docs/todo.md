@@ -51,7 +51,7 @@ Ground rules for every agent:
 ## Wave 2: lanes
 - [x] L1 compositor protocol server and trust check: crownpositor cd89e60, 85b7ded, f12456a; crownos-protocols 4547114 on android/compositor
 - [x] L2 compositor window behaviour (same commits; 652 + 150 + 7 tests)
-- [~] L3 HWC fork
+- [x] L3 HWC fork: 2ce4a85, b25e8f4, a3cf05e, 26dea9d, c5b4409, 72f13ec on crownos-waydroid-hwc android/hwc; 76 host tests; checks green
 - [x] L4 agent: 5a3fbb6, b7dc287, fed984a, 2aa49a5, d519ac5, 55880c2 (Back parking) on android/agent; 35 host tests
 - [x] L5 crown-androidd and crown-android: e57f79e, 6c19111, a8bcd27, c926476, bfcb6a1 on android/daemon; ~100 tests
 - [x] L6 setup service and bundle tooling: 823e34f, 5253387 on android/setup; 78 tests (workspace 100)
@@ -59,6 +59,10 @@ Ground rules for every agent:
 - [x] L8 installer and settings: installer 2991783, 1fe3c44; settings 8e7a2a9 on android/installer; 311 + 178 tests
 - [x] L9 ISO and pkgbuilds: crownos-android 2eb491f, crownos-pkgbuilds 3f68ffe, crownos-iso 9a4453b..4d40021 on android/iso
 - [x] L10 Venus tier: crownos-android 209a1d7, fce7d14; crownos-pkgbuilds 9349b9c on android/venus; 22 tests, reproducible build
+
+## Wave 2.5: merge
+- [x] crownos-android lanes merged into main; contract 4 fold, unit fixes, licenses, vgem binding; 269 tests green (`7349a01`)
+- [x] Cross-repo fixes on lane branches: settings `cec9919`, pkgbuilds `10bb0fa`
 
 ## Wave 3: integration
 - [ ] E1 hardware end-to-end
@@ -71,6 +75,6 @@ Ground rules for every agent:
 - [ ] P3 host side
 
 ## Wave 5: review
-- [ ] Code review
-- [ ] Security review
+- [~] Code review (Rust and Java; C++ and repo diffs) and cross-component consistency review
+- [~] Security review
 - [ ] Release checklist
