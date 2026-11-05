@@ -8,6 +8,9 @@ Collected from the lane reports. The lead handles these when merging the lane br
 - **Autoinstall key.** Check that `crownos-iso/tests/autoinstall-android.json` uses the installer's key: `"android_apps": {"enabled": {"google_play": true}}`.
 - **pkexec path.** Check that the pkexec action's `exec.path` is `/usr/lib/crownos-android/crownos-android-setup`.
 - **Lockfiles.** Refresh Cargo.lock files after the merges. Review the installer's lock refresh commit `2991783`, which may reflect the user's uncommitted crownui working copy.
+- **Contract 4 supplement.** The daemon lane added `install_package`, `open_uri` and `open_app_settings` as a supplement protocol in `runtime::supplement` on the same socket. Fold them into `android_protocol::android` as appended methods, so their selectors stay new, and route them through the one handler.
+- **Container service after logout.** Add `ExecStopPost=-/usr/bin/systemctl stop --no-block waydroid-container.service` to `crownos-android-session.service`, so Waydroid's root container manager does not outlive the session. It is best effort: polkit may refuse once the session is no longer active.
+- **Handlers.** The daemon ships `crown-android-handler.desktop` (APK) and `crown-android-market-handler.desktop` (market links). Optionally set them as defaults in the ISO's `mimeapps.list`.
 - **Licenses.** Add LICENSE files to crownos-android and install them in the PKGBUILD.
 - **vgem.** Decide on vgem release fences with the hwc lane's result. If they are used, ship `modules-load.d/crownos-android.conf` with `vgem`, bind its node into the container, and always set `drm_device`.
 
