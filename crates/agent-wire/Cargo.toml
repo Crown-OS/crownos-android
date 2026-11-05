@@ -1,0 +1,19 @@
+[package]
+name = "crownos-android-agent-wire"
+description = "Record format crown-agent speaks with the CrownOS hwcomposer and crown-androidd"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "agent_wire"
+
+[dependencies]
+thiserror.workspace = true
+
+[dev-dependencies]
+hex.workspace = true
+
+[lints]
+workspace = true

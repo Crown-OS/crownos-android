@@ -1,0 +1,13 @@
+# S1 spike: root agent started by init from the Waydroid overlay.
+# Installed by root-steps.sh as /var/lib/waydroid/overlay/system/etc/init/crown-agent-spike.rc,
+# which the container sees as /system/etc/init/crown-agent-spike.rc.
+service crown_agent_spike /system/bin/app_process64 / org.crownos.agent.Spike serve /data/local/tmp/crown-agent-spike
+    class late_start
+    user root
+    group root system shell
+    setenv CLASSPATH /system/framework/crown-agent-spike.jar
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+    start crown_agent_spike

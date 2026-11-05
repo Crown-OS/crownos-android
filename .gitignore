@@ -1,0 +1,5 @@
+target/
+/build/
+*.img
+*.zip
+spikes/**/build/

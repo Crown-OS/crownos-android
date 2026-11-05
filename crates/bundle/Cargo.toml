@@ -1,0 +1,21 @@
+[package]
+name = "crownos-android-bundle"
+description = "Signed manifest of the CrownOS Android overlay bundle and its pinned Waydroid images"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "bundle"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+hex.workspace = true
+minisign-verify.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

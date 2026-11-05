@@ -1,0 +1,15 @@
+[package]
+name = "crownos-android-desktop-entries"
+description = "Desktop entries for installed Android apps"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "desktop_entries"
+
+[dependencies]
+
+[lints]
+workspace = true

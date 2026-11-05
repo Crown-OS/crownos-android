@@ -1,0 +1,18 @@
+[package]
+name = "crownos-android-protocol"
+description = "Control protocol of crown-androidd, the CrownOS Android runtime manager"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "android_protocol"
+
+[dependencies]
+crownos-ipc.workspace = true
+serde.workspace = true
+setup-state.workspace = true
+
+[lints]
+workspace = true

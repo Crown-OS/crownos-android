@@ -1,0 +1,61 @@
+[workspace]
+resolver = "3"
+# Every member is registered here up front, so a lane only ever edits the
+# crates it owns (docs/briefs/). A lane adds its own dependencies to its
+# crate's Cargo.toml; only dependencies shared by several crates live below.
+members = [
+  "crates/agent-wire",
+  "crates/android-protocol",
+  "crates/setup-state",
+  "crates/bundle",
+  "crates/runtime",
+  "crates/desktop-entries",
+  "crates/splash",
+  "crates/venus",
+  "daemon",
+  "cli",
+  "setup",
+  "bench",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Crown-OS/crownos-android"
+
+[workspace.lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
+dbg_macro = "warn"
+todo = "warn"
+
+[workspace.dependencies]
+agent-wire = { package = "crownos-android-agent-wire", path = "crates/agent-wire" }
+android-protocol = { package = "crownos-android-protocol", path = "crates/android-protocol" }
+setup-state = { package = "crownos-android-setup-state", path = "crates/setup-state" }
+bundle = { package = "crownos-android-bundle", path = "crates/bundle" }
+runtime = { package = "crownos-android-runtime", path = "crates/runtime" }
+desktop-entries = { package = "crownos-android-desktop-entries", path = "crates/desktop-entries" }
+splash = { package = "crownos-android-splash", path = "crates/splash" }
+venus = { package = "crownos-android-venus", path = "crates/venus" }
+crownos-ipc = { path = "../crownos-ipc" }
+crownos-config = { path = "../crownos-config", default-features = false }
+crownos-protocols = { path = "../crownos-protocols", features = ["client"] }
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+hex = "0.4"
+minisign-verify = "0.2"
+log = "0.4"
+env_logger = "0.11"
+zbus = { version = "5", default-features = false, features = ["blocking-api"] }
+rustix = { version = "1", features = ["fs", "net", "process"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"

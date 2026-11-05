@@ -1,0 +1,15 @@
+[package]
+name = "crownos-android-splash"
+description = "Placeholder window shown while an Android app starts"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+name = "splash"
+
+[dependencies]
+
+[lints]
+workspace = true
