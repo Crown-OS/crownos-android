@@ -10,6 +10,8 @@ license.workspace = true
 name = "desktop_entries"
 
 [dependencies]
+android-protocol.workspace = true
+log.workspace = true
 
 [lints]
 workspace = true
