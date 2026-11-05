@@ -4,17 +4,12 @@ import android.app.ActivityManager;
 import android.graphics.Rect;
 import android.view.SurfaceControl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.crownos.agent.atlas.Atlas;
 import org.crownos.agent.atlas.Slot;
 import org.crownos.agent.platform.HiddenApiException;
 import org.crownos.agent.util.AgentLog;
-import org.crownos.agent.util.Dimensions;
 import org.crownos.agent.util.Loop;
 import org.crownos.agent.wire.RecordSink;
 
@@ -24,10 +19,9 @@ import org.crownos.agent.wire.RecordSink;
  * Everything runs on the agent loop.
  */
 public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, TaskLauncher.Listener {
-    private final int displayWidth;
-    private final int displayHeight;
+    private final DisplayGeometry display;
     private final Atlas atlas;
-    private final Map<Integer, TaskState> tasks = new HashMap<>();
+    private final TaskTable tasks = new TaskTable();
     private final TaskReporter reporter;
     private final TaskResizer resizer;
     private final TaskLauncher launcher;
@@ -35,8 +29,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     private Runnable reclaim = () -> { };
 
     public TaskCoordinator(Loop loop, int displayWidth, int displayHeight, RecordSink hwc, RecordSink daemon) {
-        this.displayWidth = displayWidth;
-        this.displayHeight = displayHeight;
+        this.display = new DisplayGeometry(displayWidth, displayHeight);
         this.atlas = new Atlas(displayWidth, displayHeight);
         this.reporter = new TaskReporter(hwc, daemon);
         this.resizer = new TaskResizer(loop, atlas, this);
@@ -51,18 +44,14 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     @Override
     public void onAppeared(ActivityManager.RunningTaskInfo info, SurfaceControl leash) {
         TaskSnapshot snapshot = TaskSnapshot.of(info);
-        TaskState task = tasks.get(snapshot.id);
-        if (task == null) {
-            task = new TaskState(snapshot.id);
-            tasks.put(task.id, task);
-        }
+        TaskState task = tasks.getOrAdd(snapshot.id);
         TaskSnapshot previous = task.snapshot;
         Leashes.release(task.leash);
         task.leash = leash;
         task.snapshot = snapshot;
         task.placedLeash = null;
         if (leash != null) {
-            Slot where = task.isWindow() ? task.slot : ownBounds(snapshot);
+            Slot where = task.isWindow() ? task.slot : display.boundsOf(snapshot);
             Leashes.show(leash, where);
             task.placedLeash = where;
         }
@@ -96,16 +85,6 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         forget(task);
     }
 
-    private static boolean stillRunning(int taskId) {
-        try {
-            return TaskQueries.isRunning(taskId);
-        } catch (HiddenApiException e) {
-            AgentLog.warn("cannot tell whether task " + taskId + " still runs; treating it as removed: "
-                    + e.getMessage());
-            return false;
-        }
-    }
-
     /** The task is gone for certain, as a safe-mode poll found. */
     void onRemoved(int taskId) {
         TaskState task = tasks.get(taskId);
@@ -115,42 +94,31 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     }
 
     boolean knows(int taskId) {
-        return tasks.containsKey(taskId);
+        return tasks.contains(taskId);
     }
 
     List<Integer> knownTasks() {
-        return new ArrayList<>(tasks.keySet());
+        return tasks.ids();
     }
 
     boolean hasLeash(int taskId) {
-        TaskState task = tasks.get(taskId);
-        return task != null && task.leash != null;
+        return tasks.hasLeash(taskId);
     }
 
     /** Every task that is a window, as announced to the daemon. */
     public int[] windowTasks() {
-        int[] ids = new int[tasks.size()];
-        int count = 0;
-        for (TaskState task : tasks.values()) {
-            if (task.announced) {
-                ids[count++] = task.id;
-            }
-        }
-        return Arrays.copyOf(ids, count);
+        return tasks.announcedIds();
     }
 
     /** Sends the hwcomposer every window's facts and slot, after it connected. */
     public void resendWindows() {
-        for (TaskState task : tasks.values()) {
-            if (task.isWindow()) {
-                reporter.resend(task, task.placedLeash != null ? task.placedLeash : task.slot);
-            }
+        for (TaskState task : tasks.windows()) {
+            reporter.resend(task, task.placedLeash != null ? task.placedLeash : task.slot);
         }
     }
 
     public void launch(String packageName, int width, int height, String activationToken) {
-        launcher.launch(packageName, Dimensions.fromWire(width, displayWidth),
-                Dimensions.fromWire(height, displayHeight), activationToken);
+        launcher.launch(packageName, display.wireWidth(width), display.wireHeight(height), activationToken);
     }
 
     public void openUri(String uri) {
@@ -158,30 +126,30 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     }
 
     public void resize(int taskId, int width, int height, int serial) {
-        TaskState task = window(taskId);
+        TaskState task = tasks.window(taskId);
         if (task == null) {
             AgentLog.warn("SetSize for task " + taskId + ", which is not a window");
             return;
         }
-        resizer.resize(task, Math.max(Dimensions.fromWire(width, displayWidth), task.snapshot.minWidth),
-                Math.max(Dimensions.fromWire(height, displayHeight), task.snapshot.minHeight), serial);
+        resizer.resize(task, Math.max(display.wireWidth(width), task.snapshot.minWidth),
+                Math.max(display.wireHeight(height), task.snapshot.minHeight), serial);
     }
 
     public void focus(int taskId) {
-        if (window(taskId) != null) {
+        if (tasks.window(taskId) != null) {
             atlas.focus(taskId);
             TaskControl.focus(taskId);
         }
     }
 
     public void close(int taskId) {
-        if (window(taskId) != null) {
+        if (tasks.window(taskId) != null) {
             TaskControl.remove(taskId);
         }
     }
 
     public void back(int taskId) {
-        TaskState task = window(taskId);
+        TaskState task = tasks.window(taskId);
         if (task == null) {
             return;
         }
@@ -192,7 +160,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     }
 
     public void setHostVisible(int taskId, boolean visible) {
-        if (window(taskId) != null) {
+        if (tasks.window(taskId) != null) {
             atlas.setVisible(taskId, visible);
         }
     }
@@ -207,7 +175,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
 
     @Override
     public boolean onLaunchResolved(PendingLaunch launch, int taskId) {
-        TaskState task = window(taskId);
+        TaskState task = tasks.window(taskId);
         if (task == null) {
             return false;
         }
@@ -233,7 +201,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
     private void refresh(TaskState task, TaskSnapshot previous) {
         TaskSnapshot snapshot = task.snapshot;
         if (!snapshot.isApp()) {
-            placeLeash(task, ownBounds(snapshot));
+            placeLeash(task, display.boundsOf(snapshot));
             return;
         }
         if (!task.isWindow()) {
@@ -266,7 +234,9 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         }
         task.slot = atlas.slotOf(task.id);
         if (task.slot == null) {
-            task.slot = atlas.place(task.id, initialWidth(snapshot), initialHeight(snapshot));
+            boolean ownSize = display.hasOwnSize(snapshot);
+            task.slot = atlas.place(task.id, ownSize ? snapshot.bounds.width() : launcher.defaultWidth(),
+                    ownSize ? snapshot.bounds.height() : launcher.defaultHeight());
         }
         if (snapshot.focused) {
             atlas.focus(task.id);
@@ -279,7 +249,7 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         if (placement == TaskPlacement.ORGANIZED) {
             resizer.refit(task, task.slot.width, task.slot.height);
         } else {
-            reporter.slot(task, ownBounds(snapshot));
+            reporter.slot(task, display.boundsOf(snapshot));
         }
     }
 
@@ -293,11 +263,12 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
             return;
         }
         if (bounds.equals(task.refusedBounds)) {
-            Slot actual = ownBounds(task.snapshot);
-            AgentLog.warnOnce("refused-" + task.id + "-" + bounds, "task " + task.id + " keeps " + actual
-                    + " instead of its slot " + slot);
-            placeLeash(task, actual);
-            reporter.slot(task, actual);
+            Slot actual = display.boundsOf(task.snapshot);
+            if (!actual.equals(task.placedLeash)) {
+                AgentLog.warn("task " + task.id + " keeps " + actual + " instead of its slot " + slot);
+                placeLeash(task, actual);
+                reporter.slot(task, actual);
+            }
             return;
         }
         task.refusedBounds = new Rect(bounds);
@@ -352,28 +323,13 @@ public final class TaskCoordinator implements TaskEvents, TaskResizer.Listener, 
         }
     }
 
-    private TaskState window(int taskId) {
-        TaskState task = tasks.get(taskId);
-        return task != null && task.isWindow() ? task : null;
-    }
-
-    private Slot ownBounds(TaskSnapshot snapshot) {
-        Rect bounds = snapshot.bounds;
-        return new Slot(snapshot.positionInParent.x, snapshot.positionInParent.y,
-                bounds.isEmpty() ? displayWidth : bounds.width(), bounds.isEmpty() ? displayHeight : bounds.height());
-    }
-
-    private boolean hasOwnSize(TaskSnapshot snapshot) {
-        Rect bounds = snapshot.bounds;
-        return snapshot.isFreeform() && !bounds.isEmpty()
-                && (bounds.width() < displayWidth || bounds.height() < displayHeight);
-    }
-
-    private int initialWidth(TaskSnapshot snapshot) {
-        return hasOwnSize(snapshot) ? snapshot.bounds.width() : launcher.defaultWidth();
-    }
-
-    private int initialHeight(TaskSnapshot snapshot) {
-        return hasOwnSize(snapshot) ? snapshot.bounds.height() : launcher.defaultHeight();
+    private static boolean stillRunning(int taskId) {
+        try {
+            return TaskQueries.isRunning(taskId);
+        } catch (HiddenApiException e) {
+            AgentLog.warn("cannot tell whether task " + taskId + " still runs; treating it as removed: "
+                    + e.getMessage());
+            return false;
+        }
     }
 }
