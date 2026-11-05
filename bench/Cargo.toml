@@ -11,7 +11,19 @@ name = "crown-android-bench"
 path = "src/main.rs"
 
 [dependencies]
+android-protocol.workspace = true
 anyhow.workspace = true
+clap = { version = "4.6", features = ["derive"] }
+rustix = { workspace = true, features = ["event", "param"] }
+serde.workspace = true
+serde_json.workspace = true
+toml = "1"
+wayland-client = "0.31"
+wayland-protocols = { version = "0.32", features = ["client", "staging"] }
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+wayland-protocols = { version = "0.32", features = ["client", "server", "staging"] }
+wayland-server = "0.31"

@@ -1,0 +1,29 @@
+{
+  "format": 1,
+  "started": "2026-11-04T18:00:00Z",
+  "kernel": "7.2.9-2-cachyos",
+  "privilege": "user",
+  "apps": ["com.android.settings", "com.android.documentsui"],
+  "baseline": null,
+  "verdicts": [],
+  "metrics": {
+    "launch.splash": { "value": 84.2, "unit": "ms" },
+    "launch.cold_first_frame": { "value": 9120.5, "unit": "ms" },
+    "launch.warm_first_frame": { "value": 980.0, "unit": "ms" },
+    "memory.android": { "value": 1012.4, "unit": "MiB", "android_apps": 2 },
+    "memory.daemon": { "value": 4.1, "unit": "MiB" },
+    "idle.android_cpu": { "value": 1.12, "unit": "percent" },
+    "idle.daemon_cpu": { "value": 0.0, "unit": "percent" },
+    "idle_stop.stop": { "value": 2310.0, "unit": "ms" },
+    "idle_stop.leftover_processes": { "value": 0.0, "unit": "count" },
+    "idle_stop.leftover_mounts": { "value": 0.0, "unit": "count" },
+    "idle_stop.mem_available": { "value": 18.5, "unit": "MiB" }
+  },
+  "skipped": {
+    "memory.hwc": "needs root",
+    "memory.agent": "needs root",
+    "idle.android_wakeups": "needs root"
+  },
+  "failures": {},
+  "steps": {}
+}
