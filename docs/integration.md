@@ -11,7 +11,11 @@ Collected from the lane reports. The lead handles these when merging the lane br
 - **Licenses.** Add LICENSE files to crownos-android and install them in the PKGBUILD.
 - **vgem.** Decide on vgem release fences with the hwc lane's result. If they are used, ship `modules-load.d/crownos-android.conf` with `vgem`, bind its node into the container, and always set `drm_device`.
 
+- Venus release asset: upload `~/.cache/crownos-android/venus/dist/crownos-android-venus-2026.11.0.tar.zst` as release `venus-2026.11.0` on Crown-OS/crownos-android; the PKGBUILD pins its sha256 and commit `fce7d14`.
+- `spikes/s4-venus/runtime-test.sh` still names the unit `crownos-venus.service`; use `crownos-android-render.service` when running it.
+
 ## User, when merging into their own repos
+- crownpositor: `clippy -D warnings` fails on 93 warnings that already exist on `main` (none on lines the compositor lane changed; five of the files carry uncommitted user edits). Decide whether to clean them up before or after merging `android/compositor`.
 - **crownos-config.** The `android/base` branch, carrying the android section and `android.ron`, must be merged with the uncommitted clock and lock-transition work in `/e/CrownOS/crownos-config`.
   - Settings and crownpositor build against both.
 - **Settings in the lane layout.** Settings only builds in the lane layout through an overlay, because its `crownpositor` dependency points at `/e`'s uncommitted lockscreen code.

@@ -114,7 +114,7 @@ The D-Bus `Notify` path keeps reading the `value` hint as percent. Lane L7 also 
 | `crownos-android-setup.service` | system, oneshot | first-boot setup, gated by `ConditionPathExists=/var/lib/crownos/android/pending` |
 | `crown-androidd.socket`, `crown-androidd.service` | user | socket-activated daemon on `%t/crownos/crownos-android.sock` |
 | `crownos-android-session.service` | user | runs `waydroid session start`, started and stopped by the daemon |
-| `crownos-android-render.service` | system | Venus host render server, Venus tier only |
+| `crownos-android-render.service` | user | Venus host render server, Venus tier only, started by the daemon before the session |
 
 ### Paths
 | Path | Owner | Contents |

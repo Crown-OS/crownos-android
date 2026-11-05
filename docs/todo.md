@@ -49,8 +49,8 @@ Ground rules for every agent:
 - [x] Lane briefs in `docs/briefs/`, worktrees under `~/crownos-lanes/<lane>` (`tools/lane.sh`), builds serialized by `~/crownos-lanes/bin/build-slot`.
 
 ## Wave 2: lanes
-- [~] L1 compositor protocol server and trust check
-- [~] L2 compositor window behaviour
+- [x] L1 compositor protocol server and trust check: crownpositor cd89e60, 85b7ded, f12456a; crownos-protocols 4547114 on android/compositor
+- [x] L2 compositor window behaviour (same commits; 652 + 150 + 7 tests)
 - [~] L3 HWC fork
 - [~] L4 agent
 - [~] L5 crown-androidd and crown-android
@@ -58,7 +58,7 @@ Ground rules for every agent:
 - [x] L7 crownotify (crownui unchanged): commits dd2b4e8, 75a3385, a05209b, 22b4445 on android/notify; 364 tests
 - [x] L8 installer and settings: installer 2991783, 1fe3c44; settings 8e7a2a9 on android/installer; 311 + 178 tests
 - [x] L9 ISO and pkgbuilds: crownos-android 2eb491f, crownos-pkgbuilds 3f68ffe, crownos-iso 9a4453b..4d40021 on android/iso
-- [~] L10 Venus tier
+- [x] L10 Venus tier: crownos-android 209a1d7, fce7d14; crownos-pkgbuilds 9349b9c on android/venus; 22 tests, reproducible build
 
 ## Wave 3: integration
 - [ ] E1 hardware end-to-end
