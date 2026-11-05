@@ -24,13 +24,15 @@ Collected from the lane reports. The lead handles these when merging the lane br
 
 - crownos-process-monitor's `docs/conventions.md` says "Never commit"; the bench lane committed `2f30c94` on its own branch `android/bench` only, per the lane rules.
 
+- Stage enum docs in `crates/setup-state` list WaitingForNetwork before Probing; setup reports Probing first. Reorder the doc at merge (no wire change: stages are names).
+
 ## Measurement gaps (bench reports "not measured")
 - Setup duration: `setup.json` carries no timestamps. Either add `updated_unix_ms` to `SetupStatus` (contract 5, appended field) or let the bench time stage changes itself.
 - Frames, resize and raise latency: need Perfetto inside Android, tracing spans in crownpositor and wp_presentation instrumentation in the HWC.
 
 ## Release
 - **Artifacts.** Publish crownos-android and crownos-android-venus, plus `bundle-<version>.tar.zst` with `manifest.json` and `manifest.json.minisig` at its root, from the crownos-android release. Then update the PKGBUILD commit pins.
-- **Signing key.** Generate the release minisign key, replacing the dev key in `setup/src/keys.rs` (setup lane).
+- **Signing key.** Generate the release minisign key, replacing the dev key in `setup/src/keys.rs` and its test fixture. The dev secret is `~/.cache/crownos-android/keys/crownos-android-dev.key`; it is for development only.
 - **CI.** Decide whether CI runs `install-test.sh --android`, which needs e2fsprogs.
 - **ISO size.** `crownos-android-venus` pulls `nvidia-utils` into the offline mirror, which makes the ISO bigger.
 

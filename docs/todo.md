@@ -54,7 +54,7 @@ Ground rules for every agent:
 - [~] L3 HWC fork
 - [x] L4 agent: 5a3fbb6, b7dc287, fed984a, 2aa49a5, d519ac5, 55880c2 (Back parking) on android/agent; 35 host tests
 - [~] L5 crown-androidd and crown-android
-- [~] L6 setup service and bundle tooling
+- [x] L6 setup service and bundle tooling: 823e34f, 5253387 on android/setup; 78 tests (workspace 100)
 - [x] L7 crownotify (crownui unchanged): commits dd2b4e8, 75a3385, a05209b, 22b4445 on android/notify; 364 tests
 - [x] L8 installer and settings: installer 2991783, 1fe3c44; settings 8e7a2a9 on android/installer; 311 + 178 tests
 - [x] L9 ISO and pkgbuilds: crownos-android 2eb491f, crownos-pkgbuilds 3f68ffe, crownos-iso 9a4453b..4d40021 on android/iso
