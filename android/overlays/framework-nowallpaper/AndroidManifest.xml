@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static RRO for framework-res: no WallpaperManagerService, so no display-sized wallpaper buffer. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.crownos.android.overlay.framework">
+    <overlay
+        android:targetPackage="android"
+        android:isStatic="true"
+        android:priority="900" />
+    <application android:hasCode="false" />
+</manifest>

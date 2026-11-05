@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="freeform_decor_caption_height">0dp</dimen>
+    <dimen name="freeform_decor_shadow_focused_thickness">0dp</dimen>
+    <dimen name="freeform_decor_shadow_unfocused_thickness">0dp</dimen>
+    <dimen name="freeform_resize_handle">0dp</dimen>
+    <dimen name="freeform_resize_corner">0dp</dimen>
+</resources>

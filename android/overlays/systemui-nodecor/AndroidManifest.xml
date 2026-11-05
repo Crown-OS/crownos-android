@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Static RRO for SystemUI: the WM Shell freeform decor gets no caption, shadow or resize handles.
+  With crown-agent organizing tasks the shell decorates nothing; this is the fallback for safe mode.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.crownos.android.overlay.systemui">
+    <overlay
+        android:targetPackage="com.android.systemui"
+        android:isStatic="true"
+        android:priority="900" />
+    <application android:hasCode="false" />
+</manifest>
