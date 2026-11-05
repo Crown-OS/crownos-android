@@ -1,0 +1,12 @@
+[Unit]
+Description=CrownOS Android apps manager socket
+Documentation=https://github.com/Crown-OS/crownos-android
+
+[Socket]
+ListenStream=%t/crownos/crownos-android.sock
+SocketMode=0600
+DirectoryMode=0700
+
+[Install]
+WantedBy=sockets.target
+Also=crown-androidd.path

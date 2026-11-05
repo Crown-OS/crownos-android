@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone target="ACCEPT">
+  <short>Android apps</short>
+  <description>The Waydroid bridge of CrownOS Android apps, trusted like the trusted zone: Android gets DHCP and DNS from Waydroid's dnsmasq on it and reaches the network through it.</description>
+  <interface name="waydroid0"/>
+</zone>

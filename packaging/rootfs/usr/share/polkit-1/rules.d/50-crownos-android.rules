@@ -1,0 +1,14 @@
+// The person at the machine may start and stop the Android container and the
+// Android setup without a password: crown-androidd starts Android on demand,
+// stops it when idle and retries a failed setup.
+polkit.addRule(function (action, subject) {
+    var units = ["waydroid-container.service", "crownos-android-setup.service"];
+    var verbs = ["start", "stop"];
+    if (action.id === "org.freedesktop.systemd1.manage-units" &&
+        subject.local && subject.active &&
+        units.indexOf(action.lookup("unit")) >= 0 &&
+        verbs.indexOf(action.lookup("verb")) >= 0) {
+        return polkit.Result.YES;
+    }
+    return polkit.Result.NOT_HANDLED;
+});
