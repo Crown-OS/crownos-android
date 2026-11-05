@@ -6,11 +6,12 @@ use std::io;
 use crownos_config::system::AndroidTier;
 use venus::Support;
 
-use crate::waydroid::config_nodes;
-use crate::{Paths, android_ron, binder, venus_socket};
+use crate::waydroid::config_nodes::{self, Managed};
+use crate::{Paths, android_ron, binder, venus_socket, vgem};
 
-/// Pins the binder nodes and, on the Venus tier, the NVIDIA render node in
-/// the container's LXC config and each user's socket directory. binderfs is
+/// Pins the binder nodes, vgem's render node and, on the Venus tier, the
+/// NVIDIA render node in the container's LXC config and each user's socket
+/// directory. binderfs is
 /// checked in this process's own mount namespace, since the one `run` mounted
 /// stayed in the setup unit's private namespace.
 pub fn prepare_container(paths: &Paths) -> anyhow::Result<()> {
@@ -29,8 +30,14 @@ pub fn prepare_container(paths: &Paths) -> anyhow::Result<()> {
     venus_socket::prepare(paths)
 }
 
-/// Rewrites `config_nodes` with the canonical binder lines and the Venus line.
+/// Rewrites `config_nodes` with the canonical binder lines, vgem's line and
+/// the Venus line.
 pub fn sync_config_nodes(paths: &Paths, venus: Option<&Support>) -> io::Result<bool> {
     let venus_line = venus.map(venus::container_mount_line);
-    config_nodes::update(&paths.config_nodes(), venus_line.as_deref())
+    let vgem_line = vgem::render_node(&paths.sys()).map(|node| vgem::mount_line(&node));
+    let managed = Managed {
+        venus: venus_line.as_deref(),
+        vgem: vgem_line.as_deref(),
+    };
+    config_nodes::update(&paths.config_nodes(), managed)
 }

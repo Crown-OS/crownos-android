@@ -21,6 +21,7 @@ pub mod props;
 pub mod status;
 pub mod util;
 pub mod venus_socket;
+pub mod vgem;
 pub mod waydroid;
 
 pub use failure::{FailWith, Retryable, SetupFailure};

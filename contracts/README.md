@@ -41,7 +41,7 @@ Runs as root. Every subcommand writes `setup.json` when it changes setup state.
 | Command | Caller | Does |
 |---|---|---|
 | `crownos-android-setup run` | `crownos-android-setup.service` | The first-boot setup. It is idempotent and resumes after a reboot. |
-| `crownos-android-setup prepare-container` | `ExecStartPre=` drop-in on `waydroid-container.service` | Pins binder nodes, and on the Venus tier adds the NVIDIA render node to the container. |
+| `crownos-android-setup prepare-container` | `ExecStartPre=` drop-in on `waydroid-container.service` | Pins binder nodes, binds vgem's render node for the hwcomposer's fences (`modules-load.d` loads vgem), and on the Venus tier adds the NVIDIA render node to the container. |
 | `crownos-android-setup remove [--wipe-data]` | Settings, through `pkexec` (`org.crownos.android.setup`) | Removes the images and overlay, disables the units and deletes the marker. `--wipe-data` also deletes every user's Waydroid data. |
 | `crownos-android-setup enable` | Settings, through `pkexec`, after a reset or to turn Android apps back on | Sets `enabled: true` in `android.ron`, creates the pending marker and starts `crownos-android-setup.service` without waiting for it. |
 | `crownos-android-setup make-manifest --root <dir> --version <v> --pins <json>` | CI bundle build | Writes `manifest.json` for an unpacked bundle. |
