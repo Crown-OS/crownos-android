@@ -10,9 +10,10 @@ Done on 2026-11-05:
 - Licenses are added (`934c817`) and installed by the PKGBUILD (`10bb0fa` on crownos-pkgbuilds `android/iso`).
 - Checked: the autoinstall key `"android_apps": {"enabled": {"google_play": true}}`, and the pkexec `exec.path` `/usr/lib/crownos-android/crownos-android-setup`.
 
+- vgem: the hwc lane uses vgem release and retire fences. `modules-load.d/crownos-android.conf` loads vgem, and `prepare-container` binds its render node with a line Waydroid never writes, so the line follows a renumbered node. Setup always sets `drm_device`. Commit `6e06917`.
+
 Still open:
 - **Lockfiles.** Refresh the Cargo.lock files of the existing repos after the merges. Review the installer's lock refresh commit `2991783`, which may reflect the user's uncommitted crownui working copy.
-- **vgem.** Decide on vgem release fences once the hwc lane reports. If they are used, ship `modules-load.d/crownos-android.conf` with `vgem`, bind its node into the container, and always set `drm_device`.
 - **Handlers.** Optionally make `crown-android-handler.desktop` (APK) and `crown-android-market-handler.desktop` (market links) the defaults in the ISO's `mimeapps.list`.
 - **Venus release asset.** Upload `~/.cache/crownos-android/venus/dist/crownos-android-venus-2026.11.0.tar.zst` as release `venus-2026.11.0` on Crown-OS/crownos-android. The PKGBUILD pins its sha256 and commit `fce7d14`.
 - **Spike script.** `spikes/s4-venus/runtime-test.sh` still names the unit `crownos-venus.service`; use `crownos-android-render.service` when running it.
