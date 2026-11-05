@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The code-free HOME that replaces Launcher3. Its activity is android.app.Activity with a floating,
+  translucent, empty theme, so it draws nothing and holds no display-sized buffer.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.crownos.android.home">
+    <application
+        android:hasCode="false"
+        android:label="CrownOS">
+        <activity
+            android:name="android.app.Activity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true"
+            android:theme="@style/BlankHome">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
