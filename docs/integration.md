@@ -29,6 +29,8 @@ Collected from the lane reports. The lead handles these when merging the lane br
 - **ISO size.** `crownos-android-venus` pulls `nvidia-utils` into the offline mirror, which makes the ISO bigger.
 
 ## Behaviour to confirm with the user
+- Back on an app's first screen closes its window but keeps the app alive in Android ("parked"); launching it again restores it where it was. Closing with the window's close button ends the task.
+- A refused `crown-android open <uri>` (scheme not market/https) is only logged inside Android; the CLI gets no error.
 - **Loader under Do Not Disturb.** DND decides only where a resident notification first lands. A loader the user swiped away keeps updating in the notification center instead of popping up again.
 - **Start control.** Settings has no "Start Android" control, because contract 4 has no start-without-launch call.
 - **Daemon lifetime.** Settings keeps the daemon alive while its Android page has been opened and the window is still open.
